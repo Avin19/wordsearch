@@ -7,6 +7,7 @@
   <Project Path="UnityEngine.Purchasing.Stores.csproj" />
   <Project Path="UnityEngine.Purchasing.csproj" />
   <Project Path="UnityEngine.Advertisements.DevX.Editor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.Services.Core.Environments.Editor.csproj" />
   <Project Path="Unity.Services.Core.csproj" />
   <Project Path="Unity.Services.Core.Editor.csproj" />
@@ -37,6 +38,5 @@
   <Project Path="UnityEngine.Purchasing.WinRTCore.csproj" />
   <Project Path="Purchasing.Common.csproj" />
   <Project Path="Unity.Services.Core.Environments.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="UnityEngine.Purchasing.AppleCore.csproj" />
 </Solution>

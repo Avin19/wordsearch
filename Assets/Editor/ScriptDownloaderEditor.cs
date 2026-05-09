@@ -198,7 +198,7 @@ Prepare for liftoff and enjoy your journey to the International Space Station! ð
     private static async Task DownloadAndInstallGoogleMobileAdsPackage()
     {
         string[] packagesToAdd = { "com.unity.ads", "com.unity.textmeshpro" };
-        AddPackages(packagesToAdd);
+        await AddPackages(packagesToAdd);
     }
 
     private static void InstallUnityPackage(string filePath)
