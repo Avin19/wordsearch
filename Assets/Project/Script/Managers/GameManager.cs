@@ -2,6 +2,8 @@ using UnityEngine;
 
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
+using static WordSearch.UniversalConstants;
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private RectTransform _highlightImg;
@@ -15,7 +17,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform _mainCanvas;
     private float _canvasWidthOffset;
 
-    private const int HIGHLIGHT_BASE_WIDTH = 42;
+    private const int HIGHLIGHT_BASE_WIDTH = 45;
+    private const float HIGHLIGHT_Y_SIZE = 48.75f;
+    private const float HIGHLIGHT_X_OFFSET = 10f, HIGHLIGHT_Y_OFFSET = 38f;         // Additional Offset to cover the beginning letter correctly
+    // private static Vector2 CanvasSize => new Vector2(720, 1280);
+    // private static Vector2 CellSize => new Vector2(10, 10);
 
     void Start()
     {
@@ -37,7 +43,7 @@ public class GameManager : MonoBehaviour
     }
 
     private Vector2 screenPos;          // DEBUG
-    // private Vector2 debugScreenPos, canvasPoint;
+    private Vector2 debugScreenPos, canvasPoint;
     private void TestTouch()
     {
         if (Touch.activeTouches.Count != 0)
@@ -64,7 +70,19 @@ public class GameManager : MonoBehaviour
                     null, // Use null for Screen Space - Overlay
                     out canvasPoint
                 );
-                canvasPoint.x += _canvasWidthOffset - (HIGHLIGHT_BASE_WIDTH / 2);
+                // canvasPoint.x += _canvasWidthOffset - (INDENT_VAL_INCREMENT / 2);
+                debugScreenPos = canvasPoint;
+
+                canvasPoint.x += _canvasWidthOffset;
+                // Snap to Grid Cells
+                canvasPoint.x = Mathf.Floor(canvasPoint.x / INDENT_VAL_INCREMENT) * INDENT_VAL_INCREMENT
+                            - HIGHLIGHT_X_OFFSET;
+                canvasPoint.y = Mathf.Floor(canvasPoint.y / HIGHLIGHT_Y_SIZE) * HIGHLIGHT_Y_SIZE
+                            + HIGHLIGHT_Y_OFFSET;
+
+                // This should be done to placethe highlight in center of click, but since already offsetting on top so removed
+                // canvasPoint.x -= (INDENT_VAL_INCREMENT / 2);
+
                 _highlightImg.anchoredPosition = canvasPoint;
             }
             else

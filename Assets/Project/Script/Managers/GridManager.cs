@@ -4,9 +4,11 @@ using System;
 using System.Text;
 
 using UnityEngine;
+using static WordSearch.UniversalConstants;
 
 namespace WordSearch
 {
+
     public class GridManager : MonoBehaviour
     {
         [SerializeField] private RectTransform _highlightImg;
@@ -19,7 +21,6 @@ namespace WordSearch
         private const int TOTAL_ROWS = 10;
 
         private const string INDENT_TAG = "<indent={0}>";
-        private const int INDENT_VAL_INCREMENT = 45;
 
         //              HIGHLIGHT
         private const int HIGHLIGHT_BASE_WIDTH = 42;
