@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform _highlightImg;
     [SerializeField] private RectTransform _gridContent;
     private Vector2 _intialTouchPos, _intitalCanvasPos;
+    private Vector2Int _prevCellIndex;
     private bool _initalPosSet;
     private Vector2 _resRatio;
 
@@ -22,13 +23,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RectTransform _mainCanvas;
     private float _canvasWidthOffset;
 
-    private const int HIGHLIGHT_BASE_WIDTH = 42;
+    private const float HIGHLIGHT_BASE_SIZE = 45.1f;
     private const float HIGHLIGHT_Y_SIZE = 48.75f;
     private const float HIGHLIGHT_X_OFFSET = 10f, HIGHLIGHT_Y_OFFSET = 11.1f, HIGHLIGHT_Y_OFF_MULT = 0.7f;         // Additional Offset to cover the beginning letter correctly
     private const int START_GRID_INDEX = 11;
 
-    private const float CELL_OFFSET_X = 19.95f, CELL_OFFSET_Y = -23.5f;
+    private const float CELL_OFFSET_X = 19.95f, CELL_OFFSET_Y = -22.5f;
     private const float CELL_SIZE_X = 45.1f, CELL_SIZE_Y = 48.2f;
+    private const float CELL_GAP = 30.56f;
 
     // private static Vector2 CanvasSize => new Vector2(720, 1280);
     // private static Vector2 CellSize => new Vector2(10, 10);
@@ -139,7 +141,7 @@ public class GameManager : MonoBehaviour
                 // Debug.Log($"Drag finalPos: {finalPos}");
 
                 // Vector2 finalSize = _highlightImg.sizeDelta;
-                // finalSize.x = (diff * _resRatio.x) + (HIGHLIGHT_BASE_WIDTH / 2);
+                // finalSize.x = (diff * _resRatio.x) + (HIGHLIGHT_BASE_SIZE / 2);
                 // _highlightImg.sizeDelta = finalSize;
             }
         }
@@ -151,7 +153,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Vector2 debugCellSize = new Vector2(45.1f, 48.2f);
     [SerializeField] private Vector2 debugCellOffset = new Vector2(19.95f, -23.5f);
     private Vector2 cellSnapPos;
-    private Vector2Int cellIndex;
     private Vector2 debugScreenPos;
     private Vector2 debugScreenOffsetPos;
     // private Vector2 screenPos;
@@ -160,6 +161,7 @@ public class GameManager : MonoBehaviour
 #if DEBUG_DRAG
     private Vector2 dragDiff;
     private Vector2 dragPos;
+    private Vector2Int cellIndex;
 #endif
 
     private void TestTouch2()
@@ -189,26 +191,26 @@ public class GameManager : MonoBehaviour
 #if DEBUG_CELL_PLACEMENT
                 debugScreenPos = _intitalCanvasPos;
 
-                debugScreenOffsetPos.x = debugScreenPos.x + (_gridContent.sizeDelta.x / 2) - (HIGHLIGHT_BASE_WIDTH / 2);
-                debugScreenOffsetPos.y = debugScreenPos.y - (_gridContent.sizeDelta.y / 2) + (HIGHLIGHT_BASE_WIDTH / 2);
+                debugScreenOffsetPos.x = debugScreenPos.x + (_gridContent.sizeDelta.x / 2) - (HIGHLIGHT_BASE_SIZE / 2);
+                debugScreenOffsetPos.y = debugScreenPos.y - (_gridContent.sizeDelta.y / 2) + (HIGHLIGHT_BASE_SIZE / 2);
 
                 _intitalCanvasPos = debugScreenOffsetPos;
 
-                cellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / debugCellSize.x);
-                cellSnapPos.x = cellIndex.x * debugCellSize.x + debugCellOffset.x;
+                _prevCellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / debugCellSize.x);
+                cellSnapPos.x = _prevCellIndex.x * debugCellSize.x + debugCellOffset.x;
 
-                cellIndex.y = Mathf.FloorToInt((_intitalCanvasPos.y * -1) / debugCellSize.y);      // Already know that this will go from minus to plus
-                cellSnapPos.y = cellIndex.y * debugCellSize.y * -1 + debugCellOffset.y;
+                _prevCellIndex.y = Mathf.FloorToInt((_intitalCanvasPos.y * -1) / debugCellSize.y);      // Already know that this will go from minus to plus
+                cellSnapPos.y = _prevCellIndex.y * debugCellSize.y * -1 + debugCellOffset.y;
 #else
-                _intitalCanvasPos.x = _intitalCanvasPos.x + (_gridContent.sizeDelta.x / 2) - (HIGHLIGHT_BASE_WIDTH / 2);
-                _intitalCanvasPos.y = _intitalCanvasPos.y - (_gridContent.sizeDelta.y / 2) + (HIGHLIGHT_BASE_WIDTH / 2);
+                _intitalCanvasPos.x = _intitalCanvasPos.x + (_gridContent.sizeDelta.x / 2) - (HIGHLIGHT_BASE_SIZE / 2);
+                _intitalCanvasPos.y = _intitalCanvasPos.y - (_gridContent.sizeDelta.y / 2) + (HIGHLIGHT_BASE_SIZE / 2);
 
                 Vector2 cellSnapPos = _intitalCanvasPos;
-                cellSnapPos.x = Mathf.FloorToInt(_intitalCanvasPos.x / CELL_SIZE_X)
-                                * CELL_SIZE_X + CELL_OFFSET_X;
+                _prevCellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / CELL_SIZE_X);
+                cellSnapPos.x = _prevCellIndex.x * CELL_SIZE_X + CELL_OFFSET_X;
 
-                cellSnapPos.y = Mathf.FloorToInt((_intitalCanvasPos.y * -1) / CELL_SIZE_X)
-                                * (CELL_SIZE_Y * -1) + CELL_OFFSET_Y;
+                _prevCellIndex.y = Mathf.FloorToInt((_intitalCanvasPos.y * -1) / CELL_SIZE_X);
+                cellSnapPos.y = _prevCellIndex.y * (CELL_SIZE_X * -1) + CELL_OFFSET_Y;
 #endif
                 // Debug.Log($"HighLight Y: {yIndex}");
 
@@ -217,26 +219,35 @@ public class GameManager : MonoBehaviour
             }
             else
             {
+                return;          //  TEST
 
 #if !DEBUG_DRAG
                 Vector2 dragDiff = screenPos - _intialTouchPos;
                 Vector2 dragPos;
+                Vector2Int cellIndex;
 #else
                 dragDiff = screenPos - _intialTouchPos;
 #endif
 
                 dragPos = _intitalCanvasPos;
                 dragPos.x += (dragDiff.x * _resRatio.x);
-                dragPos.x = Mathf.Floor(dragPos.x / CELL_SIZE_X) * CELL_SIZE_X + CELL_OFFSET_X;
+                cellIndex.x = Mathf.FloorToInt(dragPos.x / CELL_SIZE_X);
+                dragPos.x = cellIndex.x * CELL_SIZE_X + CELL_OFFSET_X;
 
                 dragPos.y += (dragDiff.y * _resRatio.y);
-                dragPos.y = Mathf.Floor(dragPos.y / CELL_SIZE_Y) * CELL_SIZE_Y + (CELL_OFFSET_Y * -1);
+                cellIndex.y = Mathf.FloorToInt(dragPos.y / CELL_SIZE_X);
+                dragPos.y = cellIndex.y * CELL_SIZE_X - CELL_OFFSET_Y;
 
+                if (_prevCellIndex.x == cellIndex.x && _prevCellIndex.y == cellIndex.y)
+                {
+                    // _highlightImg.sizeDelta =
+                    _prevCellIndex = cellIndex;
+                }
                 _highlightImg.anchoredPosition = dragPos;
                 // Debug.Log($"Drag finalPos: {dragPos}");
 
                 // Vector2 finalSize = _highlightImg.sizeDelta;
-                // finalSize.x = (diff * _resRatio.x) + (HIGHLIGHT_BASE_WIDTH / 2);
+                // finalSize.x = (diff * _resRatio.x) + (HIGHLIGHT_BASE_SIZE / 2);
                 // _highlightImg.sizeDelta = finalSize;
             }
         }
