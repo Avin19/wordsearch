@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     // private static Vector2 CanvasSize => new Vector2(720, 1280);
     // private static Vector2 CellSize => new Vector2(10, 10);
 
+    private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
+
     void Start()
     {
         _resRatio.x = _mainCanvas.sizeDelta.x / Screen.width;
@@ -57,7 +59,8 @@ public class GameManager : MonoBehaviour
     void LateUpdate()
     {
         // TestTouch();
-        TestTouch2();
+        // TestTouch2();
+        TestTouch3();
     }
 
 #if DEBUG_CELL_PLACEMENT_OLD
@@ -105,7 +108,7 @@ public class GameManager : MonoBehaviour
 
                 _intitalCanvasPos.x += _canvasWidthOffset;
                 // Snap to Grid Cells
-                _intitalCanvasPos.x = Mathf.Floor(_intitalCanvasPos.x / INDENT_VAL_INCREMENT) * INDENT_VAL_INCREMENT
+                _intitalCanvasPos.x = Mathf.Floor(_intitalCanvasPos.x / CELL_SIZE) * CELL_SIZE
                             - HIGHLIGHT_X_OFFSET;
 
 #if DEBUG_CELL_PLACEMENT_OLD
@@ -138,7 +141,7 @@ public class GameManager : MonoBehaviour
 
                 Vector2 finalPos = _intitalCanvasPos;
                 finalPos.x += (diff * _resRatio.x);
-                finalPos.x = Mathf.Floor(finalPos.x / INDENT_VAL_INCREMENT) * INDENT_VAL_INCREMENT
+                finalPos.x = Mathf.Floor(finalPos.x / CELL_SIZE) * CELL_SIZE
                             - HIGHLIGHT_X_OFFSET;
                 // _highlightImg.anchoredPosition = finalPos;
                 // Debug.Log($"Drag finalPos: {finalPos}");
@@ -290,6 +293,69 @@ public class GameManager : MonoBehaviour
                 // Vector2 finalSize = _highlightImg.sizeDelta;
                 // finalSize.x = (diff * _resRatio.x) + (HIGHLIGHT_BASE_SIZE / 2);
                 // _highlightImg.sizeDelta = finalSize;
+            }
+        }
+        else
+            _initalPosSet = false;
+    }
+
+    private void TestTouch3()
+    {
+        if (Touch.activeTouches.Count != 0)
+        {
+            Vector2 screenPos = Touch.activeTouches[0].screenPosition;
+            if (!_initalPosSet)
+            {
+                _initalPosSet = true;
+
+                _intialTouchPos = screenPos;
+
+                _intitalCanvasPos = _intialTouchPos;
+                _intitalCanvasPos.x = ((_intialTouchPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
+                // This is not opposite as the touchi goes from bottom-left to top-right
+                _intitalCanvasPos.y = ((_intialTouchPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
+
+                // Offset to adjust grid start pos
+                _intitalCanvasPos.x -= GRID_X_OFFSET;
+                _intitalCanvasPos.y -= GRID_Y_OFFSET;
+
+                _prevCellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / CELL_SIZE);
+                _prevCellIndex.y = Mathf.CeilToInt(_intitalCanvasPos.y / CELL_SIZE);
+
+                // Shift to grid pos
+                _intitalCanvasPos.x = (_prevCellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
+                _intitalCanvasPos.y = (_prevCellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
+
+                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
+                _highlightImg.anchoredPosition = _intitalCanvasPos;
+                _highlightImg.anchoredPosition += cellOffset;
+            }
+            else
+            {
+                // return;         //TEST
+
+#if !DEBUG_DRAG
+                Vector2 dragPos = _intitalCanvasPos;
+                Vector2Int cellIndex;
+#endif
+                dragPos.x = ((screenPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
+                dragPos.y = ((screenPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
+
+                // Offset to adjust grid start pos
+                dragPos.x -= GRID_X_OFFSET;
+                dragPos.y -= GRID_Y_OFFSET;
+
+                cellIndex.x = Mathf.FloorToInt(dragPos.x / CELL_SIZE);
+                cellIndex.y = Mathf.CeilToInt(dragPos.y / CELL_SIZE);
+
+                // Shift to grid pos
+                dragPos.x = (cellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
+                dragPos.y = (cellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
+
+
+                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
+                _highlightImg.anchoredPosition = dragPos;
+                _highlightImg.anchoredPosition += cellOffset;
             }
         }
         else
