@@ -356,28 +356,30 @@ public class GameManager : MonoBehaviour
                 dragPos.x = (cellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
                 dragPos.y = (cellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
 
-                //          HORIZONTAL PLACEMENT
+                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / 2);
+
+                //          HORIZONTAL SIZE
                 // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
-                highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
-                highLightSize.y = CELL_SIZE;
-                _highlightImg.sizeDelta = highLightSize;
+                // highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
 
-                //          VERTICAL PLACEMENT
-                // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | Also index-offset
-                // highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + 1 + CELL_INDEX_Y_OFFSET));
-                // _highlightImg.sizeDelta = highLightSize;
-
+                //          VERTICAL SIZE
+                // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | No index-offset
+                highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
 
                 // Taking the average as the anchor is at the midddle
                 //          HORIZONTAL PLACEMENT
-                dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+                // dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+                // cellOffset.y *= -1;
+                // _highlightImg.rotation = Quaternion.identity;
 
-                //          VERTICAL PLACEMENT
-                // dragPos.x = _intitalCanvasPos.x;
-                // dragPos.y = (_intitalCanvasPos.y - dragPos.y) / 2;
+                //          VERTICAL PLACEMENT  
+                dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
+                cellOffset.y *= -1;
+                _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
 
+                highLightSize.y = CELL_SIZE;
+                _highlightImg.sizeDelta = highLightSize;
                 _highlightImg.anchoredPosition = dragPos;
-                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
                 _highlightImg.anchoredPosition += cellOffset;
             }
         }
