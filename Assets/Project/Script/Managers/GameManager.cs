@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     // private static Vector2 CellSize => new Vector2(10, 10);
 
     private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
+    private const float DRAG_BOUND_OFFSET = 15;
     private const int CELL_INDEX_X_OFFSET = 7, CELL_INDEX_Y_OFFSET = 4;            // X: [-7 : 2] | Y: [5 : -4]
     private const int GRID_SIZE = 10;
 
@@ -330,6 +331,7 @@ public class GameManager : MonoBehaviour
                 _intitalCanvasPos.x = (_prevCellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
                 _intitalCanvasPos.y = (_prevCellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
 
+                _highlightImg.sizeDelta = new Vector2(CELL_SIZE, CELL_SIZE);
                 Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
                 _highlightImg.anchoredPosition = _intitalCanvasPos;
                 _highlightImg.anchoredPosition += cellOffset;
@@ -345,7 +347,7 @@ public class GameManager : MonoBehaviour
 #endif
                 // Drag position check to not allow negative values i.e. Only allowing Left->Right | Up->Down drag for now
                 // Touch position | LEFT->RIGHT: Positive | UP->DOWN: Negative
-                if ((screenPos - _intialTouchPos).x < 0 || (screenPos - _intialTouchPos).y > 0) return;
+                if ((screenPos - _intialTouchPos).x < -DRAG_BOUND_OFFSET || (screenPos - _intialTouchPos).y > DRAG_BOUND_OFFSET) return;
 
                 dragPos.x = ((screenPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
                 dragPos.y = ((screenPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
@@ -375,11 +377,13 @@ public class GameManager : MonoBehaviour
                     testHorAligned = true;
                     //          HORIZONTAL SIZE
                     // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
-                    highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
+                    // highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _prevCellIndex.x + 1);
 
                     // Taking the average as the anchor is at the midddle
                     //          HORIZONTAL PLACEMENT
                     dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+                    dragPos.y = _intitalCanvasPos.y;
                     cellOffset.y *= -1;
                     _highlightImg.rotation = Quaternion.identity;
                 }
@@ -389,10 +393,12 @@ public class GameManager : MonoBehaviour
                     testHorAligned = false;
                     //          VERTICAL SIZE
                     // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | No index-offset
-                    highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
+                    // highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(_prevCellIndex.y - cellIndex.y + 1);
 
                     //          VERTICAL PLACEMENT  
                     dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
+                    dragPos.x = _intitalCanvasPos.x;
                     cellOffset.y *= -1;
                     _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
                 }
