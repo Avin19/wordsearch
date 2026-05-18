@@ -167,10 +167,11 @@ public class GameManager : MonoBehaviour
 #endif
 
 #if DEBUG_DRAG
-    private Vector2 dragDiff;
-    private Vector2 dragPos;
-    private Vector2Int cellIndex;
-    private Vector2 highLightSize;
+    Vector2 dragDiff;
+    Vector2 dragPos;
+    Vector2Int cellIndex;
+    Vector2 highLightSize;
+    bool testHorAligned;
 #endif
 
     private void TestTouch2()
@@ -342,6 +343,10 @@ public class GameManager : MonoBehaviour
                 Vector2 highLightSize;
                 Vector2Int cellIndex;
 #endif
+                // Drag position check to not allow negative values i.e. Only allowing Left->Right | Up->Down drag for now
+                // Touch position | LEFT->RIGHT: Positive | UP->DOWN: Negative
+                if ((screenPos - _intialTouchPos).x < 0 || (screenPos - _intialTouchPos).y > 0) return;
+
                 dragPos.x = ((screenPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
                 dragPos.y = ((screenPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
 
@@ -358,24 +363,40 @@ public class GameManager : MonoBehaviour
 
                 Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / 2);
 
-                //          HORIZONTAL SIZE
-                // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
-                // highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
+                // TODO: If Initial position stays as it is and the drag position is moved, then we find average 
+                //       Check the direction and tilt the highlight, we got diagonal
 
-                //          VERTICAL SIZE
-                // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | No index-offset
-                highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
 
-                // Taking the average as the anchor is at the midddle
-                //          HORIZONTAL PLACEMENT
-                // dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
-                // cellOffset.y *= -1;
-                // _highlightImg.rotation = Quaternion.identity;
+                // Drag orientation | Horizontal/Vertical | Going CC
 
-                //          VERTICAL PLACEMENT  
-                dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
-                cellOffset.y *= -1;
-                _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
+                //              HORIZONTAL DRAG | Check if x-difference is greater than y-difference
+                if ((cellIndex.x - _prevCellIndex.x) >= (_prevCellIndex.y - cellIndex.y))
+                {
+                    testHorAligned = true;
+                    //          HORIZONTAL SIZE
+                    // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
+                    highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
+
+                    // Taking the average as the anchor is at the midddle
+                    //          HORIZONTAL PLACEMENT
+                    dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+                    cellOffset.y *= -1;
+                    _highlightImg.rotation = Quaternion.identity;
+                }
+                //              VERTICAL DRAG
+                else
+                {
+                    testHorAligned = false;
+                    //          VERTICAL SIZE
+                    // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | No index-offset
+                    highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
+
+                    //          VERTICAL PLACEMENT  
+                    dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
+                    cellOffset.y *= -1;
+                    _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
+                }
+                // return;         //TEST
 
                 highLightSize.y = CELL_SIZE;
                 _highlightImg.sizeDelta = highLightSize;
