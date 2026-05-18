@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     // private static Vector2 CellSize => new Vector2(10, 10);
 
     private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
+    private const int CELL_INDEX_X_OFFSET = 7, CELL_INDEX_Y_OFFSET = 4;            // X: [-7 : 2] | Y: [5 : -4]
+    private const int GRID_SIZE = 10;
 
     void Start()
     {
@@ -168,6 +170,7 @@ public class GameManager : MonoBehaviour
     private Vector2 dragDiff;
     private Vector2 dragPos;
     private Vector2Int cellIndex;
+    private Vector2 highLightSize;
 #endif
 
     private void TestTouch2()
@@ -336,6 +339,7 @@ public class GameManager : MonoBehaviour
 
 #if !DEBUG_DRAG
                 Vector2 dragPos = _intitalCanvasPos;
+                Vector2 highLightSize;
                 Vector2Int cellIndex;
 #endif
                 dragPos.x = ((screenPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
@@ -352,9 +356,28 @@ public class GameManager : MonoBehaviour
                 dragPos.x = (cellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
                 dragPos.y = (cellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
 
+                //          HORIZONTAL PLACEMENT
+                // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
+                highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
+                highLightSize.y = CELL_SIZE;
+                _highlightImg.sizeDelta = highLightSize;
 
-                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
+                //          VERTICAL PLACEMENT
+                // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | Also index-offset
+                // highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + 1 + CELL_INDEX_Y_OFFSET));
+                // _highlightImg.sizeDelta = highLightSize;
+
+
+                // Taking the average as the anchor is at the midddle
+                //          HORIZONTAL PLACEMENT
+                dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+
+                //          VERTICAL PLACEMENT
+                // dragPos.x = _intitalCanvasPos.x;
+                // dragPos.y = (_intitalCanvasPos.y - dragPos.y) / 2;
+
                 _highlightImg.anchoredPosition = dragPos;
+                Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
                 _highlightImg.anchoredPosition += cellOffset;
             }
         }
