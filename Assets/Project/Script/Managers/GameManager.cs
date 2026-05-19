@@ -32,14 +32,16 @@ public class GameManager : MonoBehaviour
     private const float CELL_SIZE_X = 45.1f;
     private const float HIGHLIGHT_EX_OFFSET = 0.35f;
 
-    private const float VERTICAL_ALIGNMENT = -90f, VERT_ALIGN_QUARTERNION = 0.7071068f;
 
     // private static Vector2 CanvasSize => new Vector2(720, 1280);
     // private static Vector2 CellSize => new Vector2(10, 10);
 
     private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
     private const float DRAG_BOUND_OFFSET = 15;
-    private const int CELL_INDEX_X_OFFSET = 7, CELL_INDEX_Y_OFFSET = 4;            // X: [-7 : 2] | Y: [5 : -4]
+    private const float VERT_ALIGN_QUART = 0.7071068f;
+    private const float DIAG_ALIGN_QUART_Z = -0.3826834f, DIAG_ALIGN_QUART_W = 0.9238796f;
+
+    // TOP_LEFT_INDEX: [-7, 5], BOTTOM_RIGHT_INDEX: [2, -4];
     private const int GRID_SIZE = 10;
 
     void Start()
@@ -241,7 +243,7 @@ public class GameManager : MonoBehaviour
 #if !DEBUG_DRAG
                 Vector2 dragDiff = screenPos - _intialTouchPos;
                 Vector2 dragPos;
-                Vector2Int cellIndex;
+                Vector2Int cellIndex = Vector2Int.zero;
 #else
                 dragDiff = screenPos - _intialTouchPos;
 #endif
@@ -272,7 +274,7 @@ public class GameManager : MonoBehaviour
                         highLightSize.x = ((cellIndex.y - _initalCellIndex.y) * CELL_SIZE_X) + HIGHLIGHT_EX_OFFSET * (cellIndex.y + 1);
 
                         // Adjustment for vertical alignment
-                        _highlightImg.localRotation = new Quaternion(0, 0, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
+                        _highlightImg.localRotation = new Quaternion(0, 0, -VERT_ALIGN_QUART, VERT_ALIGN_QUART);
                         _highlightImg.anchoredPosition = new Vector2(_intitalCanvasPos.x + CELL_SIZE_X, _intitalCanvasPos.y);
                     }
                     // Player is dragging horizontal
@@ -324,12 +326,13 @@ public class GameManager : MonoBehaviour
                 _intitalCanvasPos.x -= GRID_X_OFFSET;
                 _intitalCanvasPos.y -= GRID_Y_OFFSET;
 
-                _prevCellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / CELL_SIZE);
-                _prevCellIndex.y = Mathf.CeilToInt(_intitalCanvasPos.y / CELL_SIZE);
+                _initalCellIndex.x = Mathf.FloorToInt(_intitalCanvasPos.x / CELL_SIZE);
+                _initalCellIndex.y = Mathf.CeilToInt(_intitalCanvasPos.y / CELL_SIZE);
+                _prevCellIndex = _initalCellIndex;
 
                 // Shift to grid pos
-                _intitalCanvasPos.x = (_prevCellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
-                _intitalCanvasPos.y = (_prevCellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
+                _intitalCanvasPos.x = (_initalCellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
+                _intitalCanvasPos.y = (_initalCellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
 
                 _highlightImg.sizeDelta = new Vector2(CELL_SIZE, CELL_SIZE);
                 Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
@@ -343,7 +346,8 @@ public class GameManager : MonoBehaviour
 #if !DEBUG_DRAG
                 Vector2 dragPos = _intitalCanvasPos;
                 Vector2 highLightSize;
-                Vector2Int cellIndex;
+                Vector2Int cellIndex = Vector2Int.zero;
+                // bool testHorAligned = false;
 #endif
                 // Drag position check to not allow negative values i.e. Only allowing Left->Right | Up->Down drag for now
                 // Touch position | LEFT->RIGHT: Positive | UP->DOWN: Negative
@@ -358,6 +362,7 @@ public class GameManager : MonoBehaviour
 
                 cellIndex.x = Mathf.FloorToInt(dragPos.x / CELL_SIZE);
                 cellIndex.y = Mathf.CeilToInt(dragPos.y / CELL_SIZE);
+                _prevCellIndex = cellIndex;
 
                 // Shift to grid pos
                 dragPos.x = (cellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
@@ -368,39 +373,42 @@ public class GameManager : MonoBehaviour
                 // TODO: If Initial position stays as it is and the drag position is moved, then we find average 
                 //       Check the direction and tilt the highlight, we got diagonal
 
-
                 // Drag orientation | Horizontal/Vertical | Going CC
 
                 //              HORIZONTAL DRAG | Check if x-difference is greater than y-difference
-                if ((cellIndex.x - _prevCellIndex.x) >= (_prevCellIndex.y - cellIndex.y))
+                if ((cellIndex.x - _initalCellIndex.x) > (_initalCellIndex.y - cellIndex.y))
                 {
-                    testHorAligned = true;
-                    //          HORIZONTAL SIZE
-                    // Offset cell-index as it goes from [-7 : 2] to [0 : 10] | Also index-offset
-                    // highLightSize.x = CELL_SIZE * (cellIndex.x + 1 + CELL_INDEX_X_OFFSET);
-                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _prevCellIndex.x + 1);
+                    // testHorAligned = true;
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
 
                     // Taking the average as the anchor is at the midddle
-                    //          HORIZONTAL PLACEMENT
                     dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
                     dragPos.y = _intitalCanvasPos.y;
                     cellOffset.y *= -1;
                     _highlightImg.rotation = Quaternion.identity;
                 }
+                //              DIAGONAL DRAG
+                else if ((cellIndex.x - _initalCellIndex.x) == (_initalCellIndex.y - cellIndex.y))
+                {
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
+                    highLightSize.x += (CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y);           // Extra to cover the diagonal distance
+
+                    // Taking the average as the anchor is at the midddle
+                    dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
+                    dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
+                    cellOffset.y *= -1;
+                    _highlightImg.rotation = new Quaternion(0f, 0f, DIAG_ALIGN_QUART_Z, DIAG_ALIGN_QUART_W);
+                }
                 //              VERTICAL DRAG
                 else
                 {
-                    testHorAligned = false;
-                    //          VERTICAL SIZE
-                    // Offset cell-index as it goes from [5 : -4] to [10 : 0] and then inverse | No index-offset
-                    // highLightSize.x = CELL_SIZE * (GRID_SIZE - (cellIndex.y + CELL_INDEX_Y_OFFSET));
-                    highLightSize.x = CELL_SIZE * Mathf.Abs(_prevCellIndex.y - cellIndex.y + 1);
+                    // testHorAligned = false;
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.y - _initalCellIndex.y + 1);    // Index-offset
 
-                    //          VERTICAL PLACEMENT  
                     dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
                     dragPos.x = _intitalCanvasPos.x;
                     cellOffset.y *= -1;
-                    _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUARTERNION, VERT_ALIGN_QUARTERNION);
+                    _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUART, VERT_ALIGN_QUART);
                 }
                 // return;         //TEST
 
@@ -411,7 +419,10 @@ public class GameManager : MonoBehaviour
             }
         }
         else
+        {
+            // Invoke action to check if the player has selected any word
             _initalPosSet = false;
+        }
     }
 
     [SerializeField] private RectTransform _testBarImg;
