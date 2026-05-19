@@ -1,16 +1,21 @@
 using System;
-using System.Collections.Generic;
 
 namespace WordSearch
 {
+    [Serializable]
     public class LevelGenerator
     {
         internal enum WordDir { HOR, VER, DIAG }
 
         private int _gridSize;
         private char[][] _genGrid;
-        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private Random _randomGen;
+
+        private const int ASCII_A = 65, ALPHABETS = 26;
+        // private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        //              TEST
+        private int _successPasses, _failedPasses, _totalAttempts;
 
         public LevelGenerator(int gridSize)
         {
@@ -54,21 +59,24 @@ namespace WordSearch
 
                 while (!placed && attempts < MAX_ATTEMPTS)
                 {
-                    wordDir = (int)MathF.Round((_randomGen.Next(0, 100) / 100f) + 0.25f);
+                    wordDir = (int)MathF.Round((_randomGen.Next(0, 150) / 100f) + 0.35f);
 
                     startRow = _randomGen.Next(_gridSize);
                     startCol = _randomGen.Next(_gridSize);
 
-                    if (TryPlaceWord(wordList[i], startRow, startCol, wordDir))
-                        placed = true;
+                    placed = TryPlaceWord(wordList[i], startRow, startCol, wordDir);
 
                     attempts++;
+                    _totalAttempts++;
                 }
 
                 if (!placed)
                 {
-                    Console.WriteLine($"Warning: Could not place the word \"{wordList[i]}\". Grid might be too small.");
+                    _failedPasses |= (1 << i);
+                    i--;                            // Decrement to allow another word to fill
+                    // Console.WriteLine($"Warning: Could not place the word \"{wordList[i]}\". Grid might be too small.");
                 }
+                else _successPasses |= (1 << i);
             }
 
             FillRandomLetters();
@@ -99,7 +107,13 @@ namespace WordSearch
                     break;
 
                 case WordDir.DIAG:
-                    if ((row + len) > _gridSize) return false;
+                    // Right along the middle
+                    if ((row >= col) && (row + len) > _gridSize)
+                        return false;
+                    // Below the middle diagonal
+                    else if ((col + len) > _gridSize)
+                        return false;
+
                     colMult = 1;
                     rowMult = 1;
 
@@ -140,7 +154,7 @@ namespace WordSearch
                 for (int c = 0; c < _gridSize; c++)
                 {
                     if (_genGrid[r][c] == '-')
-                        _genGrid[r][c] = Alphabet[_randomGen.Next(Alphabet.Length)];
+                        _genGrid[r][c] = (char)(ASCII_A + _randomGen.Next(ALPHABETS));
                 }
             }
         }
