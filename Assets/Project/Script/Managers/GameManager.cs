@@ -174,28 +174,29 @@ public class GameManager : MonoBehaviour
     Vector2 dragPos;
     Vector2Int cellIndex;
     Vector2 highLightSize;
-    bool testHorAligned;
+    // int testHorAlignedCount = 0, testDiagAlignedCount = 0, testVertAlignedCount = 0;
+    [SerializeField] float testTouchYDragOffset;
 #endif
 
     private void TestTouch2()
     {
         if (Touch.activeTouches.Count != 0)
         {
-            Vector2 screenPos;
-            screenPos = Touch.activeTouches[0].screenPosition;
+            Vector2 screenTouchPos;
+            screenTouchPos = Touch.activeTouches[0].screenPosition;
             if (!_initalPosSet)
             {
                 _initalPosSet = true;
 
                 // Offset to the bottom as the pivot/position of image is set to middle-lef
-                _intialTouchPos = screenPos;
+                _intialTouchPos = screenTouchPos;
                 // screenPos.y -= (Screen.height / 2);
 
                 // Convert Screen Point to Canvas Local Space
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
                     _gridContent,
                     // _mainCanvas,
-                    screenPos,
+                    screenTouchPos,
                     null, // Use null for Screen Space - Overlay
                     out _intitalCanvasPos
                 );
@@ -245,7 +246,7 @@ public class GameManager : MonoBehaviour
                 Vector2 dragPos;
                 Vector2Int cellIndex = Vector2Int.zero;
 #else
-                dragDiff = screenPos - _intialTouchPos;
+                dragDiff = screenTouchPos - _intialTouchPos;
 #endif
 
                 dragPos = _intitalCanvasPos;
@@ -310,12 +311,12 @@ public class GameManager : MonoBehaviour
     {
         if (Touch.activeTouches.Count != 0)
         {
-            Vector2 screenPos = Touch.activeTouches[0].screenPosition;
+            Vector2 screenTouchPos = Touch.activeTouches[0].screenPosition;
             if (!_initalPosSet)
             {
                 _initalPosSet = true;
 
-                _intialTouchPos = screenPos;
+                _intialTouchPos = screenTouchPos;
 
                 _intitalCanvasPos = _intialTouchPos;
                 _intitalCanvasPos.x = ((_intialTouchPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
@@ -347,14 +348,15 @@ public class GameManager : MonoBehaviour
                 Vector2 dragPos = _intitalCanvasPos;
                 Vector2 highLightSize;
                 Vector2Int cellIndex = Vector2Int.zero;
-                // bool testHorAligned = false;
+                // int testHorAligned = 0;
 #endif
                 // Drag position check to not allow negative values i.e. Only allowing Left->Right | Up->Down drag for now
                 // Touch position | LEFT->RIGHT: Positive | UP->DOWN: Negative
-                if ((screenPos - _intialTouchPos).x < -DRAG_BOUND_OFFSET || (screenPos - _intialTouchPos).y > DRAG_BOUND_OFFSET) return;
+                if ((screenTouchPos - _intialTouchPos).x < -DRAG_BOUND_OFFSET
+                    || (screenTouchPos - _intialTouchPos).y > DRAG_BOUND_OFFSET) return;
 
-                dragPos.x = ((screenPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
-                dragPos.y = ((screenPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
+                dragPos.x = ((screenTouchPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
+                dragPos.y = ((screenTouchPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
 
                 // Offset to adjust grid start pos
                 dragPos.x -= GRID_X_OFFSET;
@@ -362,7 +364,6 @@ public class GameManager : MonoBehaviour
 
                 cellIndex.x = Mathf.FloorToInt(dragPos.x / CELL_SIZE);
                 cellIndex.y = Mathf.CeilToInt(dragPos.y / CELL_SIZE);
-                _prevCellIndex = cellIndex;
 
                 // Shift to grid pos
                 dragPos.x = (cellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
@@ -376,10 +377,11 @@ public class GameManager : MonoBehaviour
                 // Drag orientation | Horizontal/Vertical | Going CC
 
                 //              HORIZONTAL DRAG | Check if x-difference is greater than y-difference
-                if ((cellIndex.x - _initalCellIndex.x) > (_initalCellIndex.y - cellIndex.y))
+                if ((screenTouchPos.x - _intialTouchPos.x) >
+                    (_intialTouchPos.y - screenTouchPos.y + (testTouchYDragOffset * (cellIndex.x - _initalCellIndex.x))))
                 {
-                    // testHorAligned = true;
-                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
+                    // testHorAlignedCount++;
+                    highLightSize.x = CELL_SIZE * (cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
 
                     // Taking the average as the anchor is at the midddle
                     dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
@@ -387,30 +389,36 @@ public class GameManager : MonoBehaviour
                     cellOffset.y *= -1;
                     _highlightImg.rotation = Quaternion.identity;
                 }
-                //              DIAGONAL DRAG
-                else if ((cellIndex.x - _initalCellIndex.x) == (_initalCellIndex.y - cellIndex.y))
-                {
-                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
-                    highLightSize.x += (CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y);           // Extra to cover the diagonal distance
-
-                    // Taking the average as the anchor is at the midddle
-                    dragPos.x = (_intitalCanvasPos.x + dragPos.x) / 2;
-                    dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
-                    cellOffset.y *= -1;
-                    _highlightImg.rotation = new Quaternion(0f, 0f, DIAG_ALIGN_QUART_Z, DIAG_ALIGN_QUART_W);
-                }
                 //              VERTICAL DRAG
-                else
+                else if ((screenTouchPos.x - _intialTouchPos.x + (testTouchYDragOffset * (_initalCellIndex.y - cellIndex.y))) <
+                        (_intialTouchPos.y - screenTouchPos.y))
                 {
-                    // testHorAligned = false;
-                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.y - _initalCellIndex.y + 1);    // Index-offset
+                    // testVertAlignedCount++;
+                    highLightSize.x = CELL_SIZE * (_initalCellIndex.y - cellIndex.y + 1);    // Index-offset
 
                     dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
                     dragPos.x = _intitalCanvasPos.x;
                     cellOffset.y *= -1;
                     _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUART, VERT_ALIGN_QUART);
                 }
+                //              DIAGONAL DRAG
+                else if ((cellIndex.x - _initalCellIndex.x) == (_initalCellIndex.y - cellIndex.y))
+                {
+                    // testDiagAlignedCount++;
+                    highLightSize.x = CELL_SIZE * Mathf.Abs(cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
+                    highLightSize.x += (CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y);           // Extra to cover the diagonal distance
+
+                    // Taking the average as the anchor is at the midddle | Using cell-index for more accuracy
+                    dragPos.x = _intitalCanvasPos.x + ((CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y));
+                    dragPos.y = _intitalCanvasPos.y - ((CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y));
+                    cellOffset.y *= -1;
+                    _highlightImg.rotation = new Quaternion(0f, 0f, DIAG_ALIGN_QUART_Z, DIAG_ALIGN_QUART_W);
+                }
+                // Assume previous position | This is just for not making the diagonal bar freak out
+                else
+                    return;
                 // return;         //TEST
+                _prevCellIndex = cellIndex;
 
                 highLightSize.y = CELL_SIZE;
                 _highlightImg.sizeDelta = highLightSize;
