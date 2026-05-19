@@ -38,8 +38,12 @@ public class GameManager : MonoBehaviour
 
     private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
     private const float DRAG_BOUND_OFFSET = 15;
-    private const float VERT_ALIGN_QUART = 0.7071068f;
-    private const float DIAG_ALIGN_QUART_Z = -0.3826834f, DIAG_ALIGN_QUART_W = 0.9238796f;
+    private const int DIAG_DRAG_OFFSET = 20, TOUCH_BOUNDS_OFFSET = 5;
+
+    private readonly Quaternion _vertAlignQuart = new Quaternion(0f, 0f, 0.7071068f, 0.7071068f);
+    private readonly Quaternion _diagAlignQuart = new Quaternion(0f, 0f, -0.3826834f, 0.9238796f);
+    private readonly Vector2Int _topLeftBound = new Vector2Int(-335, 247);
+    private readonly Vector2Int _bottomRightBound = new Vector2Int(79, -167);
 
     // TOP_LEFT_INDEX: [-7, 5], BOTTOM_RIGHT_INDEX: [2, -4];
     private const int GRID_SIZE = 10;
@@ -275,7 +279,7 @@ public class GameManager : MonoBehaviour
                         highLightSize.x = ((cellIndex.y - _initalCellIndex.y) * CELL_SIZE_X) + HIGHLIGHT_EX_OFFSET * (cellIndex.y + 1);
 
                         // Adjustment for vertical alignment
-                        _highlightImg.localRotation = new Quaternion(0, 0, -VERT_ALIGN_QUART, VERT_ALIGN_QUART);
+                        _highlightImg.localRotation = _vertAlignQuart;
                         _highlightImg.anchoredPosition = new Vector2(_intitalCanvasPos.x + CELL_SIZE_X, _intitalCanvasPos.y);
                     }
                     // Player is dragging horizontal
@@ -314,14 +318,12 @@ public class GameManager : MonoBehaviour
             Vector2 screenTouchPos = Touch.activeTouches[0].screenPosition;
             if (!_initalPosSet)
             {
-                _initalPosSet = true;
-
                 _intialTouchPos = screenTouchPos;
 
                 _intitalCanvasPos = _intialTouchPos;
                 _intitalCanvasPos.x = ((_intialTouchPos.x / Screen.width) * _mainCanvas.sizeDelta.x) - (_mainCanvas.sizeDelta.x / 2);
                 // This is not opposite as the touchi goes from bottom-left to top-right
-                _intitalCanvasPos.y = ((_intialTouchPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2);
+                _intitalCanvasPos.y = Mathf.FloorToInt(((_intialTouchPos.y / Screen.height) * _mainCanvas.sizeDelta.y) - (_mainCanvas.sizeDelta.y / 2));
 
                 // Offset to adjust grid start pos
                 _intitalCanvasPos.x -= GRID_X_OFFSET;
@@ -334,6 +336,12 @@ public class GameManager : MonoBehaviour
                 // Shift to grid pos
                 _intitalCanvasPos.x = (_initalCellIndex.x * CELL_SIZE) + GRID_X_OFFSET;
                 _intitalCanvasPos.y = (_initalCellIndex.y * CELL_SIZE) + GRID_Y_OFFSET;
+
+                // Bounds Check
+                if (_intitalCanvasPos.x < _topLeftBound.x || _intitalCanvasPos.x > _bottomRightBound.x ||
+                    _intitalCanvasPos.y > _topLeftBound.y || _intitalCanvasPos.y < _bottomRightBound.y) return;
+
+                _initalPosSet = true;
 
                 _highlightImg.sizeDelta = new Vector2(CELL_SIZE, CELL_SIZE);
                 Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / -2);
@@ -371,14 +379,11 @@ public class GameManager : MonoBehaviour
 
                 Vector2 cellOffset = new Vector2(CELL_SIZE / 2, CELL_SIZE / 2);
 
-                // TODO: If Initial position stays as it is and the drag position is moved, then we find average 
-                //       Check the direction and tilt the highlight, we got diagonal
-
                 // Drag orientation | Horizontal/Vertical | Going CC
 
                 //              HORIZONTAL DRAG | Check if x-difference is greater than y-difference
                 if ((screenTouchPos.x - _intialTouchPos.x) >
-                    (_intialTouchPos.y - screenTouchPos.y + (testTouchYDragOffset * (cellIndex.x - _initalCellIndex.x))))
+                    (_intialTouchPos.y - screenTouchPos.y + (DIAG_DRAG_OFFSET * (cellIndex.x - _initalCellIndex.x))))
                 {
                     // testHorAlignedCount++;
                     highLightSize.x = CELL_SIZE * (cellIndex.x - _initalCellIndex.x + 1);    // Index-offset
@@ -390,7 +395,7 @@ public class GameManager : MonoBehaviour
                     _highlightImg.rotation = Quaternion.identity;
                 }
                 //              VERTICAL DRAG
-                else if ((screenTouchPos.x - _intialTouchPos.x + (testTouchYDragOffset * (_initalCellIndex.y - cellIndex.y))) <
+                else if ((screenTouchPos.x - _intialTouchPos.x + (DIAG_DRAG_OFFSET * (_initalCellIndex.y - cellIndex.y))) <
                         (_intialTouchPos.y - screenTouchPos.y))
                 {
                     // testVertAlignedCount++;
@@ -399,7 +404,7 @@ public class GameManager : MonoBehaviour
                     dragPos.y = (_intitalCanvasPos.y + dragPos.y) / 2;
                     dragPos.x = _intitalCanvasPos.x;
                     cellOffset.y *= -1;
-                    _highlightImg.rotation = new Quaternion(0f, 0f, -VERT_ALIGN_QUART, VERT_ALIGN_QUART);
+                    _highlightImg.rotation = _vertAlignQuart;
                 }
                 //              DIAGONAL DRAG
                 else if ((cellIndex.x - _initalCellIndex.x) == (_initalCellIndex.y - cellIndex.y))
@@ -412,11 +417,12 @@ public class GameManager : MonoBehaviour
                     dragPos.x = _intitalCanvasPos.x + ((CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y));
                     dragPos.y = _intitalCanvasPos.y - ((CELL_SIZE / 2) * (_initalCellIndex.y - cellIndex.y));
                     cellOffset.y *= -1;
-                    _highlightImg.rotation = new Quaternion(0f, 0f, DIAG_ALIGN_QUART_Z, DIAG_ALIGN_QUART_W);
+                    _highlightImg.rotation = _diagAlignQuart;
                 }
                 // Assume previous position | This is just for not making the diagonal bar freak out
                 else
                     return;
+
                 // return;         //TEST
                 _prevCellIndex = cellIndex;
 
