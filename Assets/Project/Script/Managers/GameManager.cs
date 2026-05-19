@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
     private readonly Vector2Int _bottomRightBound = new Vector2Int(79, -167);
 
     // TOP_LEFT_INDEX: [-7, 5], BOTTOM_RIGHT_INDEX: [2, -4];
-    private const int GRID_SIZE = 10;
 
     void Start()
     {
