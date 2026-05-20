@@ -85,6 +85,9 @@ namespace WordSearch
                 {
                     _successPasses |= (1 << i);
 
+                    //Eg: 134252545 | 0000100000 0000001000 1000000000 01
+                    //                  Length      ROW         COL    VER
+
                     // First set the row value
                     solutionArr[i] |= (1L << (startRow + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
                     // Set the col value

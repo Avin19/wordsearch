@@ -1,6 +1,5 @@
 #define TEST_GRID
 
-using System;
 using System.Text;
 
 using UnityEngine;
@@ -60,13 +59,16 @@ namespace WordSearch
             _gridBuilder = new StringBuilder();
             _levelGenerator = new LevelGenerator(GRID_SIZE);
 
+            GameEvents.OnDragEnded += CheckForSelectedWord;
+
 #if TEST_GRID
             // TestFillGrid();
             InitializeGridWithRandom();
             PrintSolutionArr();
-            PrintGeneratedLevel();
+            // PrintGeneratedLevel();
 #endif
         }
+
 
         #region TEST
         private void TestFillGrid()
@@ -105,6 +107,44 @@ namespace WordSearch
         {
         }
 
+        private void CheckForSelectedWord(Vector2Int startIndex, Vector2Int endIndex)
+        {
+            startIndex.x += (GRID_START_X * -1);
+            startIndex.y = (startIndex.y - GRID_START_Y) * -1;        // INDEX OFFSET
+
+            endIndex.x += (GRID_START_X * -1);
+            endIndex.y = (endIndex.y - GRID_START_Y) * -1;          // INDEX OFFSET
+
+            Debug.Log($"Got Drag | startIndex: {startIndex} | endIndex: {endIndex}");
+
+            long selectedSol = 0;
+            int selectedLength = 0;
+            // DIAGONAL SELECTION
+            if ((endIndex.x - startIndex.x) == (startIndex.y - endIndex.y))
+            {
+                selectedSol |= (1 << WORD_DIAG_FLAG);
+                selectedLength = endIndex.y - startIndex.y;
+            }
+            // VERTICAL SELECTION
+            else if (endIndex.x == startIndex.x)
+            {
+                selectedSol |= (1 << WORD_VER_FLAG);
+                selectedLength = endIndex.y - startIndex.y;
+            }
+            else
+            {
+                selectedLength = endIndex.x - startIndex.x;
+            }
+
+            // First set the row value
+            selectedSol |= (1L << (startIndex.y + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+            // Set the col value
+            selectedSol |= (1L << (startIndex.x + ORIENTATION_OFFSET));
+            // Set the length value
+            selectedSol |= (1L << (selectedLength + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+
+            Debug.Log($"Selected Solution: {selectedSol} | selectedLength: {selectedLength}");
+        }
 
         private void InitializeGridWithRandom()
         {

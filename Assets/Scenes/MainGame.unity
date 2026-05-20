@@ -388,7 +388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fef915ab0c0b9884b8886149f725b739, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _highlightImg: {fileID: 982244317}
   _gridText: {fileID: 98503234}
 --- !u!1 &73441134
 GameObject:
@@ -666,8 +665,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.605011, y: -2.5150146}
-  m_SizeDelta: {x: -57.21003, y: -55.03}
+  m_AnchoredPosition: {x: 5.605031, y: -2.5150146}
+  m_SizeDelta: {x: -51.21006, y: -55.03}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &98503234
 MonoBehaviour:
@@ -4792,6 +4791,7 @@ MonoBehaviour:
   _highlightImg: {fileID: 982244317}
   _gridContent: {fileID: 183077319}
   _mainCanvas: {fileID: 1194857636}
+  testTouchYDragOffset: 20
   _testBarImg: {fileID: 1209890363}
   _testBarContainer: {fileID: 1924422446}
 --- !u!4 &1316190907

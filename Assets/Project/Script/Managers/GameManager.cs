@@ -439,6 +439,9 @@ namespace WordSearch
             else
             {
                 // Invoke action to check if the player has selected any word
+                if (_initalPosSet)
+                    GameEvents.OnDragEnded?.Invoke(_initalCellIndex, _prevCellIndex);
+
                 _initalPosSet = false;
             }
         }
