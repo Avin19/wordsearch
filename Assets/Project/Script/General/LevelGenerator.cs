@@ -12,6 +12,8 @@ namespace WordSearch
         private Random _randomGen;
 
         private const int ASCII_A = 65, ALPHABETS = 26;
+        private const int VER_FLAG = 0, DIAG_FLAG = 1;
+        private const int LENGTH_VAL_OFFSET = 10, ROW_VAL_OFFSET = 10, ORIENTATION_OFFSET = 2;
         // private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         //              TEST
@@ -39,7 +41,7 @@ namespace WordSearch
         }
 
         // Main function to generate the puzzle
-        public char[][] Generate(string[] wordList)
+        public void Generate(string[] wordList, out char[][] grid, out long[] solutionArr)
         {
             CreateEmptyGrid();
 
@@ -50,7 +52,10 @@ namespace WordSearch
             int attempts;
             const int MAX_ATTEMPTS = 100; // Prevent infinite loops
 
-            int wordDir, startRow, startCol;
+            grid = null;
+            solutionArr = new long[_gridSize];
+
+            int wordDir, startRow = 0, startCol = 0;
 
             for (int i = 0; i < _gridSize; i++)
             {
@@ -64,7 +69,7 @@ namespace WordSearch
                     startRow = _randomGen.Next(_gridSize);
                     startCol = _randomGen.Next(_gridSize);
 
-                    placed = TryPlaceWord(wordList[i], startRow, startCol, wordDir);
+                    placed = TryPlaceWord(wordList[i], startRow, startCol, wordDir, ref solutionArr[i]);
 
                     attempts++;
                     _totalAttempts++;
@@ -76,15 +81,25 @@ namespace WordSearch
                     i--;                            // Decrement to allow another word to fill
                     // Console.WriteLine($"Warning: Could not place the word \"{wordList[i]}\". Grid might be too small.");
                 }
-                else _successPasses |= (1 << i);
+                else
+                {
+                    _successPasses |= (1 << i);
+
+                    // First set the row value
+                    solutionArr[i] |= (1L << (startRow + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+                    // Set the col value
+                    solutionArr[i] |= (1L << (startCol + ORIENTATION_OFFSET));
+                    // Set the length value
+                    solutionArr[i] |= (1L << (wordList[i].Length - 1 + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+                }
             }
 
             FillRandomLetters();
-            return _genGrid;
+            grid = _genGrid;
         }
 
         // Check if a word can fit without going out of bounds or colliding badly
-        private bool TryPlaceWord(string word, int row, int col, int direction)
+        private bool TryPlaceWord(string word, int row, int col, int direction, ref long solution)
         {
             int len = word.Length;
 
@@ -96,6 +111,7 @@ namespace WordSearch
                     if ((col + len) > _gridSize) return false;
                     colMult = 1;
                     rowMult = 0;
+                    // No flag, so this is HORIZONTAL
 
                     break;
 
@@ -103,6 +119,7 @@ namespace WordSearch
                     if ((row + len) > _gridSize) return false;
                     colMult = 0;
                     rowMult = 1;
+                    solution |= (1 << VER_FLAG);
 
                     break;
 
@@ -116,6 +133,7 @@ namespace WordSearch
 
                     colMult = 1;
                     rowMult = 1;
+                    solution |= (1 << DIAG_FLAG);
 
                     break;
             }

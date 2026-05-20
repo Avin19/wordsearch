@@ -11,19 +11,33 @@ namespace WordSearch
 
     public class GridManager : MonoBehaviour
     {
-        [SerializeField] private RectTransform _highlightImg;
         [SerializeField] private TMPro.TMP_Text _gridText;
 
-        private string[] _wordArr = new string[TOTAL_ROWS];
+        private char[][] _randWordGrid;
+        private long[] _solutionArr;
 
         private StringBuilder _gridBuilder;
+
+        //          SCRIPTS
+        LevelGenerator _levelGenerator;
 
         private const int TOTAL_ROWS = 10;
 
         private const string INDENT_TAG = "<indent={0}>";
+        private const char DEFAULT_CELL = '-';
 
-        //              HIGHLIGHT
-        private const int HIGHLIGHT_BASE_WIDTH = 42;
+        private readonly string[] _wordList = new string[]
+        {
+            "SPOIL", "MEMBER", "YOU",     "STAY",  "FIXTURE", "YOU",      "TRY",    "SKATE",
+            "NOISE", "COMING", "SUN",     "SITE",  "THE",     "MISPLACE", "BOLT",   "QUOTA",
+            "DIE",   "LAZY",   "VET",     "WILL",  "ELF",     "FRIEND",   "ROUTE",  "TENSE",
+            "GEEK",  "DEAD",   "BUT",     "ZOO",   "RISE",    "EXPRESS",  "TENSE",  "THRONE",
+            "AGAIN", "ALIVE",  "DIALECT", "WITH",  "FEAR",    "SMELL",    "FORBID", "NIGHT",
+            "NOW",   "BEARD",  "IRONY",   "END",   "SERIES",  "PEST",     "EXPOSE", "LITE",
+            "YOUR",  "LIFE",   "HERB",    "TRUCE", "REVEAL",  "TOUT",     "HOPE",   "BRANCH",
+            "ONLY",  "TAKE",   "NOT",     "PRIDE", "WHAT",    "ELEGANT",  "DIVE",   "CASH",
+            "SURE",  "SYMBOL", "FOR",     "FREE",  "TESTIFY", "BERRY",    "EMPIRE", "RAISE"
+        };
 
         //              TEST
         private readonly string[] _testGrid = new string[]
@@ -44,24 +58,32 @@ namespace WordSearch
         private void Start()
         {
             _gridBuilder = new StringBuilder();
+            _levelGenerator = new LevelGenerator(GRID_SIZE);
 
 #if TEST_GRID
-            TestFillGrid();
+            // TestFillGrid();
+            InitializeGridWithRandom();
+            PrintSolutionArr();
+            PrintGeneratedLevel();
 #endif
         }
 
         #region TEST
         private void TestFillGrid()
         {
-            for (int i = 0; i < TOTAL_ROWS; i++)
-                _wordArr[i] = _testGrid[i];
+            _randWordGrid = new char[TOTAL_ROWS][];
+            for (int y = 0; y < TOTAL_ROWS; y++)
+            {
+                _randWordGrid[y] = new char[TOTAL_ROWS];
+                for (int x = 0; x < TOTAL_ROWS; x++)
+                    _randWordGrid[y][x] = DEFAULT_CELL;
+            }
 
             Debug.Log($"Filling Grid");
-            FillGrid();
+            InitializeGridWithPreGen();
         }
-        #endregion TEST
 
-        private void FillGrid()
+        private void InitializeGridWithPreGen()
         {
             int row, col;
             for (row = 0; row < TOTAL_ROWS; row++)
@@ -69,17 +91,68 @@ namespace WordSearch
                 _gridBuilder.AppendFormat(INDENT_TAG, 0);
                 for (col = 0; col < TOTAL_ROWS - 1; col++)
                 {
-                    _gridBuilder.AppendFormat("{0}", _wordArr[row][col]);
-                    _gridBuilder.AppendFormat(INDENT_TAG, (col + 1) * INDENT_VAL_INCREMENT);
+                    _gridBuilder.AppendFormat("{0}", _testGrid[row][col]);
+                    _gridBuilder.AppendFormat(INDENT_TAG, (col + 1) * CELL_SIZE);
                 }
-                _gridBuilder.AppendFormat("{0}", _wordArr[row][col]);
+                _gridBuilder.AppendFormat("{0}", _testGrid[row][col]);
+                _gridBuilder.Append('\n');
+            }
+            _gridText.text = _gridBuilder.ToString();
+        }
+        #endregion TEST
+
+        public void ProcessTileClick(int x, int y, TileStatus currentStatus)
+        {
+        }
+
+
+        private void InitializeGridWithRandom()
+        {
+            _levelGenerator.Generate(_wordList, out _randWordGrid, out _solutionArr);
+
+            int row, col;
+            _gridBuilder.Clear();
+            for (row = 0; row < TOTAL_ROWS; row++)
+            {
+                _gridBuilder.AppendFormat(INDENT_TAG, 0);
+                for (col = 0; col < TOTAL_ROWS - 1; col++)
+                {
+                    _gridBuilder.AppendFormat("{0}", _randWordGrid[row][col]);
+                    _gridBuilder.AppendFormat(INDENT_TAG, (col + 1) * CELL_SIZE);
+                }
+                _gridBuilder.AppendFormat("{0}", _randWordGrid[row][col]);
                 _gridBuilder.Append('\n');
             }
             _gridText.text = _gridBuilder.ToString();
         }
 
-        public void ProcessTileClick(int x, int y, TileStatus currentStatus)
+        private void PrintGeneratedLevel()
         {
+            _gridBuilder.Clear();
+            for (int r = 0; r < GRID_SIZE; r++)
+            {
+                for (int c = 0; c < GRID_SIZE; c++)
+                {
+                    _gridBuilder.Append(_randWordGrid[r][c]);
+                    _gridBuilder.Append(' ');
+                }
+                _gridBuilder.Append('\n');
+            }
+
+            Debug.Log("Level:\n" + _gridBuilder);
+        }
+
+        private void PrintSolutionArr()
+        {
+            _gridBuilder.Clear();
+            for (int r = 0; r < GRID_SIZE; r++)
+            {
+                _gridBuilder.Append(_solutionArr[r]);
+                _gridBuilder.Append('\n');
+            }
+
+            Debug.Log("Solution:\n" + _gridBuilder);
+
         }
     }
 }
