@@ -145,7 +145,7 @@ namespace WordSearch
             {
                 if (selectedSol == _solutionArr[i])
                 {
-                    GameEvents.OnCorrectSelection?.Invoke();
+                    GameEvents.OnCorrectSelection?.Invoke(i);
                     // Debug.Log($"Selected Solution: {selectedSol} | selectedLength: {selectedLength} | Found at: {i}");
                 }
             }
@@ -153,7 +153,8 @@ namespace WordSearch
 
         private void InitializeGridWithRandom()
         {
-            _levelGenerator.Generate(_wordList, out _randWordGrid, out _solutionArr);
+            int[] wordIndex;
+            _levelGenerator.Generate(_wordList, out _randWordGrid, out _solutionArr, out wordIndex);
 
             int row, col;
             _gridBuilder.Clear();
@@ -169,6 +170,14 @@ namespace WordSearch
                 _gridBuilder.Append('\n');
             }
             _gridText.text = _gridBuilder.ToString();
+
+            _gridBuilder.Clear();
+            for (row = 0; row < TOTAL_ROWS; row++)
+            {
+                _gridBuilder.Append(_wordList[row]);
+                _gridBuilder.Append('\n');
+            }
+            GameEvents.OnLevelGenerated?.Invoke(_gridBuilder.ToString());
         }
 
         private void PrintGeneratedLevel()

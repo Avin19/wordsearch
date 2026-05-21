@@ -41,7 +41,7 @@ namespace WordSearch
         }
 
         // Main function to generate the puzzle
-        public void Generate(string[] wordList, out char[][] grid, out long[] solutionArr)
+        public void Generate(string[] wordList, out char[][] grid, out long[] solutionArr, out int[] wordIndex)
         {
             CreateEmptyGrid();
 
@@ -54,8 +54,10 @@ namespace WordSearch
 
             grid = null;
             solutionArr = new long[_gridSize];
+            wordIndex = new int[_gridSize];
 
             int wordDir, startRow = 0, startCol = 0;
+            int wordToUseIndex = 0;
 
             for (int i = 0; i < _gridSize; i++)
             {
@@ -69,7 +71,7 @@ namespace WordSearch
                     startRow = _randomGen.Next(_gridSize);
                     startCol = _randomGen.Next(_gridSize);
 
-                    placed = TryPlaceWord(wordList[i], startRow, startCol, wordDir, ref solutionArr[i]);
+                    placed = TryPlaceWord(wordList[wordToUseIndex], startRow, startCol, wordDir, ref solutionArr[i]);
 
                     attempts++;
                     _totalAttempts++;
@@ -84,6 +86,7 @@ namespace WordSearch
                 else
                 {
                     _successPasses |= (1 << i);
+                    wordIndex[i] = wordToUseIndex;
 
                     //Eg: 134252545 | 0000100000 0000001000 1000000000 01
                     //                  Length      ROW         COL    VER
@@ -95,6 +98,7 @@ namespace WordSearch
                     // Set the length value
                     solutionArr[i] |= (1L << (wordList[i].Length - 1 + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
                 }
+                wordToUseIndex++;
             }
 
             FillRandomLetters();
