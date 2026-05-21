@@ -1,3 +1,5 @@
+#define DISABLE_TILE_CLICK
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -7,7 +9,10 @@ namespace WordSearch
 
     public enum TileStatus : byte { Empty, Filled, Cross, Hint }
 
-    public class Tile : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler
+    public class Tile : MonoBehaviour
+#if !DISABLE_TILE_CLICK
+    , IPointerDownHandler, IPointerEnterHandler
+#endif
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -52,6 +57,8 @@ namespace WordSearch
             CurrentStatus = status;
         }
 
+#if !DISABLE_TILE_CLICK
+
         // TODO: We can implement a circle or a square sprite assigned in the background
         // If the player started/ended the drag then semi circle or else square
         public void OnPointerDown(PointerEventData eventData)
@@ -79,5 +86,7 @@ namespace WordSearch
                 _gridManagerRef.ProcessTileClick(X, Y, CurrentStatus);
 #endif
         }
+
+#endif
     }
 }

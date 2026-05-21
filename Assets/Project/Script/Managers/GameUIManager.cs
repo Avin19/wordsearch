@@ -1,16 +1,33 @@
+using System;
+
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameUIManager : MonoBehaviour
+using static WordSearch.UniversalConstants;
+
+namespace WordSearch
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class GameUIManager : MonoBehaviour
     {
-        
-    }
+        [SerializeField] private Image _highlightImg;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [SerializeField] private RectTransform _highlightContainer;
+
+        //          HIGHLIGHT
+        private static readonly Color CorrectSelection = new Color(0f, 0.8396226f, 0.1217717f, 0.5019608f);
+
+        void Start()
+        {
+            GameEvents.OnCorrectSelection += InstantiateBar;
+        }
+
+        // Instantiate a new bar in the selected place
+        private void InstantiateBar()
+        {
+            Image highlightBar = Instantiate(_highlightImg, _highlightContainer);
+            highlightBar.color = CorrectSelection;
+
+            _highlightImg.rectTransform.sizeDelta = new Vector2(0, CELL_SIZE);
+        }
     }
 }

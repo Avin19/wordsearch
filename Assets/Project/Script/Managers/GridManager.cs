@@ -1,5 +1,6 @@
 #define TEST_GRID
 
+using System;
 using System.Text;
 
 using UnityEngine;
@@ -103,9 +104,7 @@ namespace WordSearch
         }
         #endregion TEST
 
-        public void ProcessTileClick(int x, int y, TileStatus currentStatus)
-        {
-        }
+        // public void ProcessTileClick(int x, int y, TileStatus currentStatus) { }
 
         private void CheckForSelectedWord(Vector2Int startIndex, Vector2Int endIndex)
         {
@@ -114,8 +113,7 @@ namespace WordSearch
 
             endIndex.x += (GRID_START_X * -1);
             endIndex.y = (endIndex.y - GRID_START_Y) * -1;          // INDEX OFFSET
-
-            Debug.Log($"Got Drag | startIndex: {startIndex} | endIndex: {endIndex}");
+            // Debug.Log($"Got Drag | startIndex: {startIndex} | endIndex: {endIndex}");
 
             long selectedSol = 0;
             int selectedLength = 0;
@@ -143,7 +141,14 @@ namespace WordSearch
             // Set the length value
             selectedSol |= (1L << (selectedLength + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
 
-            Debug.Log($"Selected Solution: {selectedSol} | selectedLength: {selectedLength}");
+            for (int i = 0; i < _solutionArr.Length; i++)
+            {
+                if (selectedSol == _solutionArr[i])
+                {
+                    GameEvents.OnCorrectSelection?.Invoke();
+                    // Debug.Log($"Selected Solution: {selectedSol} | selectedLength: {selectedLength} | Found at: {i}");
+                }
+            }
         }
 
         private void InitializeGridWithRandom()
