@@ -16,6 +16,8 @@ namespace WordSearch
         [SerializeField] private TMPro.TMP_Text _wordListTxt;
         [SerializeField] private RectTransform[] _wordCorrectArr;
 
+        [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
+
         //          HIGHLIGHT
         // private static readonly Color CorrectSelection = new Color(0f, 0.8396226f, 0.1217717f, 1f);
 
@@ -40,6 +42,10 @@ namespace WordSearch
         {
             GameEvents.OnLevelGenerated += UpdateWordList;
             GameEvents.OnCorrectSelection += InstantiateBar;
+
+            // Debug.Log($"Month: {DateTime.Today.Month} | Date: {DateTime.Today.Day}");
+            _currMonthTxt.text = DateTime.Now.ToString("MMM").ToUpper();
+            _currDateTxt.text = DateTime.Now.Day.ToString();
         }
 
         private void UpdateWordList(string wordList)
