@@ -519,6 +519,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ChatGPT Image May 2, 2026, 10_02_48 PM_2
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 638
+        width: 280
+        height: 500
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 28, y: 30, z: 28, w: 36}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91d70893bbe5fbd4a8cea3ee246ae393
+      internalID: -7819461916512702190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
