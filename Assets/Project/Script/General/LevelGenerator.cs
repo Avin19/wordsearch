@@ -1,140 +1,195 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace WordSearch
 {
+    [Serializable]
     public class LevelGenerator
     {
-        private int rows;
-        private int cols;
-        private char[,] grid;
-        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private Random random;
+        internal enum WordDir { HOR, VER, DIAG }
 
-        // Constructor to initialize the grid dimensions
-        public LevelGenerator(int rows, int cols)
+        private int _gridSize;
+        private char[][] _genGrid;
+        private Random _randomGen;
+
+        private const int ASCII_A = 65, ALPHABETS = 26;
+        private const int VER_FLAG = 0, DIAG_FLAG = 1;
+        private const int LENGTH_VAL_OFFSET = 10, ROW_VAL_OFFSET = 10, ORIENTATION_OFFSET = 2;
+        // private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        //              TEST
+        private int _successPasses, _failedPasses, _totalAttempts;
+
+        public LevelGenerator(int gridSize)
         {
-            this.rows = rows;
-            this.cols = cols;
-            this.grid = new char[rows, cols];
-            this.random = new Random();
+            _gridSize = gridSize;
+
+            _genGrid = new char[gridSize][];
+            for (int i = 0; i < gridSize; i++)
+                _genGrid[i] = new char[gridSize];
+
+            _randomGen = new Random();
         }
 
         // Initialize an empty grid with placeholders
         private void CreateEmptyGrid()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < _gridSize; r++)
             {
-                for (int c = 0; c < cols; c++)
-                {
-                    grid[r, c] = '-';
-                }
+                for (int c = 0; c < _gridSize; c++)
+                    _genGrid[r][c] = '-';
             }
         }
 
         // Main function to generate the puzzle
-        public char[,] Generate(List<string> words)
+        public void Generate(string[] wordList, out char[][] grid, out long[] solutionArr, out int[] wordIndex)
         {
             CreateEmptyGrid();
 
             // Sort words by length descending (place longest words first)
-            var sortedWords = words.OrderByDescending(w => w.Length).ToList();
+            // var sortedWords = words.OrderByDescending(w => w.Length).ToList();
 
-            foreach (var originalWord in sortedWords)
+            bool placed;
+            int attempts;
+            const int MAX_ATTEMPTS = 100; // Prevent infinite loops
+
+            grid = null;
+            solutionArr = new long[_gridSize];
+            wordIndex = new int[_gridSize];
+
+            int wordDir, startRow = 0, startCol = 0;
+            int wordToUseIndex = 0;
+
+            for (int i = 0; i < _gridSize; i++)
             {
-                string word = originalWord.ToUpper();
-                bool placed = false;
-                int attempts = 0;
-                int maxAttempts = 100; // Prevent infinite loops
+                placed = false;
+                attempts = 0;
 
-                while (!placed && attempts < maxAttempts)
+                while (!placed && attempts < MAX_ATTEMPTS)
                 {
-                    // 0 = Horizontal (Right), 1 = Vertical (Down)
-                    int direction = random.Next(2);
+                    wordDir = (int)MathF.Round((_randomGen.Next(0, 150) / 100f) + 0.35f);
 
-                    int startRow = random.Next(rows);
-                    int startCol = random.Next(cols);
+                    startRow = _randomGen.Next(_gridSize);
+                    startCol = _randomGen.Next(_gridSize);
 
-                    if (CanPlaceWord(word, startRow, startCol, direction))
-                    {
-                        PlaceWord(word, startRow, startCol, direction);
-                        placed = true;
-                    }
+                    placed = TryPlaceWord(wordList[wordToUseIndex], startRow, startCol, wordDir, ref solutionArr[i]);
+
                     attempts++;
+                    _totalAttempts++;
                 }
 
                 if (!placed)
                 {
-                    Console.WriteLine($"Warning: Could not place the word \"{word}\". Grid might be too small.");
+                    _failedPasses |= (1 << i);
+                    i--;                            // Decrement to allow another word to fill
+                    // Console.WriteLine($"Warning: Could not place the word \"{wordList[i]}\". Grid might be too small.");
                 }
+                else
+                {
+                    _successPasses |= (1 << i);
+                    wordIndex[i] = wordToUseIndex;
+
+                    //Eg: 134252545 | 0000100000 0000001000 1000000000 01
+                    //                  Length      ROW         COL    VER
+
+                    // First set the row value
+                    solutionArr[i] |= (1L << (startRow + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+                    // Set the col value
+                    solutionArr[i] |= (1L << (startCol + ORIENTATION_OFFSET));
+                    // Set the length value
+                    solutionArr[i] |= (1L << (wordList[i].Length - 1 + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+                }
+                wordToUseIndex++;
             }
 
             FillRandomLetters();
-            return grid;
+            grid = _genGrid;
         }
 
         // Check if a word can fit without going out of bounds or colliding badly
-        private bool CanPlaceWord(string word, int row, int col, int direction)
+        private bool TryPlaceWord(string word, int row, int col, int direction, ref long solution)
         {
             int len = word.Length;
 
             // Check Out of Bounds
-            if (direction == 0 && col + len > cols) return false; // Horizontal
-            if (direction == 1 && row + len > rows) return false; // Vertical
+            int rowMult = 0, colMult = 0;
+            switch ((WordDir)direction)
+            {
+                case WordDir.HOR:
+                    if ((col + len) > _gridSize) return false;
+                    colMult = 1;
+                    rowMult = 0;
+                    // No flag, so this is HORIZONTAL
 
+                    break;
+
+                case WordDir.VER:
+                    if ((row + len) > _gridSize) return false;
+                    colMult = 0;
+                    rowMult = 1;
+                    solution |= (1 << VER_FLAG);
+
+                    break;
+
+                case WordDir.DIAG:
+                    // Right along the middle
+                    if ((row >= col) && (row + len) > _gridSize)
+                        return false;
+                    // Below the middle diagonal
+                    else if ((col + len) > _gridSize)
+                        return false;
+
+                    colMult = 1;
+                    rowMult = 1;
+                    solution |= (1 << DIAG_FLAG);
+
+                    break;
+            }
+
+
+            int r, c;
             // Check for collisions
             for (int i = 0; i < len; i++)
             {
-                int r = direction == 1 ? row + i : row;
-                int c = direction == 0 ? col + i : col;
+                r = row + (i * rowMult);
+                c = col + (i * colMult);
 
-                char currentCell = grid[r, c];
+                char currentCell = _genGrid[r][c];
 
                 // If the cell is not empty AND it's not the same letter, we have a collision
                 if (currentCell != '-' && currentCell != word[i])
-                {
                     return false;
-                }
             }
-            return true;
-        }
 
-        // Actually place the word in the grid
-        private void PlaceWord(string word, int row, int col, int direction)
-        {
+            // Place the word
             for (int i = 0; i < word.Length; i++)
             {
-                int r = direction == 1 ? row + i : row;
-                int c = direction == 0 ? col + i : col;
-                grid[r, c] = word[i];
+                r = row + (i * rowMult);
+                c = col + (i * colMult);
+
+                _genGrid[r][c] = word[i];
             }
+            return true;
         }
 
         // Fill all remaining '-' cells with random alphabets
         private void FillRandomLetters()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < _gridSize; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < _gridSize; c++)
                 {
-                    if (grid[r, c] == '-')
-                    {
-                        grid[r, c] = Alphabet[random.Next(Alphabet.Length)];
-                    }
+                    if (_genGrid[r][c] == '-')
+                        _genGrid[r][c] = (char)(ASCII_A + _randomGen.Next(ALPHABETS));
                 }
             }
         }
 
-        // Utility to print the grid nicely to the console
         public void PrintGrid()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < _gridSize; r++)
             {
-                for (int c = 0; c < cols; c++)
-                {
-                    Console.Write(grid[r, c] + " ");
-                }
+                for (int c = 0; c < _gridSize; c++)
+                    Console.Write(_genGrid[r][c] + " ");
                 Console.WriteLine();
             }
         }
