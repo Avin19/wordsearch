@@ -9,14 +9,18 @@ namespace WordSearch
 {
     public class GameUIManager : MonoBehaviour
     {
-        [SerializeField] private Image _highlightImg;
+        [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
 
+        //              GRID
+        [SerializeField] private Image _highlightImg;
         [SerializeField] private RectTransform _highlightContainer;
 
         [SerializeField] private TMPro.TMP_Text _wordListTxt;
         [SerializeField] private RectTransform[] _wordCorrectArr;
 
-        [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
+        //              START
+        [SerializeField] private GameData _gameData;
+
 
         //          HIGHLIGHT
         // private static readonly Color CorrectSelection = new Color(0f, 0.8396226f, 0.1217717f, 1f);
@@ -40,12 +44,12 @@ namespace WordSearch
 
         void Start()
         {
-            GameEvents.OnLevelGenerated += UpdateWordList;
-            GameEvents.OnCorrectSelection += InstantiateBar;
-
             // Debug.Log($"Month: {DateTime.Today.Month} | Date: {DateTime.Today.Day}");
             _currMonthTxt.text = DateTime.Now.ToString("MMM").ToUpper();
             _currDateTxt.text = DateTime.Now.Day.ToString();
+
+            GameEvents.OnLevelGenerated += UpdateWordList;
+            GameEvents.OnCorrectSelection += SpawnHighlightBar;
         }
 
         private void UpdateWordList(string wordList)
@@ -54,7 +58,7 @@ namespace WordSearch
         }
 
         // Instantiate a new bar in the selected place
-        private void InstantiateBar(int wordIndex)
+        private void SpawnHighlightBar(int wordIndex)
         {
             Image highlightBar = Instantiate(_highlightImg, _highlightContainer);
             highlightBar.color = CorrectColorsArr[wordIndex];

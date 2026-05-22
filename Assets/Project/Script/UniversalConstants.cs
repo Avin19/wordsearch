@@ -9,5 +9,7 @@ namespace WordSearch
 
         public const int WORD_VER_FLAG = 0, WORD_DIAG_FLAG = 1;
         public const int LENGTH_VAL_OFFSET = 10, ROW_VAL_OFFSET = 10, ORIENTATION_OFFSET = 2;
+
+        public enum SceneIndex { MAIN_MENU = 0, MAIN_GAMEPLAY = 1 }
     }
 }
