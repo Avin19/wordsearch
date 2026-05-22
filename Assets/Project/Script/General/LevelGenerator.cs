@@ -9,7 +9,7 @@ namespace WordSearch
 
         private int _gridSize;
         private char[][] _genGrid;
-        private Random _randomGen;
+        private Random _randomWordDir, _randomWordIndex;
 
         private const int ASCII_A = 65, ALPHABETS = 26;
         private const int VER_FLAG = 0, DIAG_FLAG = 1;
@@ -27,7 +27,8 @@ namespace WordSearch
             for (int i = 0; i < gridSize; i++)
                 _genGrid[i] = new char[gridSize];
 
-            _randomGen = new Random();
+            _randomWordDir = new Random();
+            _randomWordIndex = new Random();
         }
 
         // Initialize an empty grid with placeholders
@@ -41,7 +42,7 @@ namespace WordSearch
         }
 
         // Main function to generate the puzzle
-        public void Generate(string[] wordList, out char[][] grid, out long[] solutionArr, out int[] wordIndex)
+        public void Generate(string[] wordArr, out char[][] grid, out long[] solutionArr, out int[] wordIndex)
         {
             CreateEmptyGrid();
 
@@ -58,20 +59,29 @@ namespace WordSearch
 
             int wordDir, startRow = 0, startCol = 0;
             int wordToUseIndex = 0;
+            bool newIndex = false;
 
             for (int i = 0; i < _gridSize; i++)
             {
                 placed = false;
                 attempts = 0;
+                newIndex = false;
+
+                while (!newIndex)
+                {
+                    wordToUseIndex = _randomWordIndex.Next(0, wordArr.Length);
+                    for (int j = 0; j < wordIndex.Length; i++)
+                        newIndex |= (wordIndex[j] == wordToUseIndex);
+                }
 
                 while (!placed && attempts < MAX_ATTEMPTS)
                 {
-                    wordDir = (int)MathF.Round((_randomGen.Next(0, 150) / 100f) + 0.35f);
+                    wordDir = (int)MathF.Round((_randomWordDir.Next(0, 150) / 100f) + 0.35f);
 
-                    startRow = _randomGen.Next(_gridSize);
-                    startCol = _randomGen.Next(_gridSize);
+                    startRow = _randomWordDir.Next(_gridSize);
+                    startCol = _randomWordDir.Next(_gridSize);
 
-                    placed = TryPlaceWord(wordList[wordToUseIndex], startRow, startCol, wordDir, ref solutionArr[i]);
+                    placed = TryPlaceWord(wordArr[wordToUseIndex], startRow, startCol, wordDir, ref solutionArr[i]);
 
                     attempts++;
                     _totalAttempts++;
@@ -96,9 +106,8 @@ namespace WordSearch
                     // Set the col value
                     solutionArr[i] |= (1L << (startCol + ORIENTATION_OFFSET));
                     // Set the length value
-                    solutionArr[i] |= (1L << (wordList[i].Length - 1 + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
+                    solutionArr[i] |= (1L << (wordArr[wordToUseIndex].Length - 1 + LENGTH_VAL_OFFSET + ROW_VAL_OFFSET + ORIENTATION_OFFSET));
                 }
-                wordToUseIndex++;
             }
 
             FillRandomLetters();
@@ -179,7 +188,7 @@ namespace WordSearch
                 for (int c = 0; c < _gridSize; c++)
                 {
                     if (_genGrid[r][c] == '-')
-                        _genGrid[r][c] = (char)(ASCII_A + _randomGen.Next(ALPHABETS));
+                        _genGrid[r][c] = (char)(ASCII_A + _randomWordDir.Next(ALPHABETS));
                 }
             }
         }

@@ -26,7 +26,7 @@ namespace WordSearch
         private const string INDENT_TAG = "<indent={0}>";
         private const char DEFAULT_CELL = '-';
 
-        private readonly string[] _wordList = new string[]
+        private readonly string[] _wordArr = new string[]
         {
             "SPOIL", "MEMBER", "YOU",     "STAY",  "FIXTURE", "YOU",      "TRY",    "SKATE",
             "NOISE", "COMING", "SUN",     "SITE",  "THE",     "MISPLACE", "BOLT",   "QUOTA",
@@ -154,7 +154,7 @@ namespace WordSearch
         private void InitializeGridWithRandom()
         {
             int[] wordIndex;
-            _levelGenerator.Generate(_wordList, out _randWordGrid, out _solutionArr, out wordIndex);
+            _levelGenerator.Generate(_wordArr, out _randWordGrid, out _solutionArr, out wordIndex);
 
             int row, col;
             _gridBuilder.Clear();
@@ -174,7 +174,7 @@ namespace WordSearch
             _gridBuilder.Clear();
             for (row = 0; row < TOTAL_ROWS; row++)
             {
-                _gridBuilder.Append(_wordList[row]);
+                _gridBuilder.Append(_wordArr[wordIndex[row]]);
                 _gridBuilder.Append('\n');
             }
             GameEvents.OnLevelGenerated?.Invoke(_gridBuilder.ToString());
