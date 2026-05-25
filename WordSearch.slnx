@@ -6,8 +6,8 @@
   <Project Path="UnityEditor.Purchasing.csproj" />
   <Project Path="UnityEngine.Purchasing.Stores.csproj" />
   <Project Path="UnityEngine.Purchasing.csproj" />
-  <Project Path="UnityEngine.Advertisements.DevX.Editor.csproj" />
   <Project Path="Google.Play.Games.csproj" />
+  <Project Path="UnityEngine.Advertisements.DevX.Editor.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Unity.Services.Core.Environments.Editor.csproj" />
   <Project Path="Unity.Services.Core.csproj" />
