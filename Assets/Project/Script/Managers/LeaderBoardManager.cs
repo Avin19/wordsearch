@@ -1,4 +1,4 @@
-// #define TEST_LEADERBOARD
+#define TEST_LEADERBOARD
 
 using System;
 using System.Collections.Generic;
@@ -36,8 +36,10 @@ namespace WordSearch
 
         void Start()
         {
+#if !TEST_LEADERBOARD
             PlayGamesPlatform.Activate();
             // PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+#endif
 
             _lbEntries = new List<LeaderBoardEntry>();
 
@@ -80,22 +82,22 @@ namespace WordSearch
             switch ((LeaderBoardCategory)lbCategory)
             {
                 case LeaderBoardCategory.WEEKLY:
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly1", 1, 153791));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly2", 2, 121321));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly3", 3, 131461));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly4", 4, 171441));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly5", 5, 133731));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerWeekly6", 6, 153621));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly1", 1, 15791));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly2", 2, 12321));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly3", 3, 13461));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly4", 4, 17441));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly5", 5, 13731));
+                    _lbEntries.Add(new LeaderBoardEntry("PlWeekly6", 6, 15621));
 
                     break;
 
                 case LeaderBoardCategory.ALL_TIME:
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime1", 1, 125791));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime2", 2, 124391));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime3", 3, 134261));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime4", 4, 176241));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime5", 5, 136231));
-                    _lbEntries.Add(new LeaderBoardEntry("PlayerAllTime6", 6, 154631));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime1", 1, 12791));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime2", 2, 12391));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime3", 3, 13261));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime4", 4, 17241));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime5", 5, 13231));
+                    _lbEntries.Add(new LeaderBoardEntry("PlAllTime6", 6, 15631));
 
                     break;
 
@@ -143,11 +145,11 @@ namespace WordSearch
                 limit,
                 lbCollection,
                 lbTimeSpan,
-                (LeaderboardScoreData data) => ProcessLeaderBoardScores(data, OnComplete)
+                (LeaderboardScoreData data) => ProcessLeaderBoardScores(data, limit, OnComplete)
             );
         }
 
-        private void ProcessLeaderBoardScores(LeaderboardScoreData data, Action<int, List<LeaderBoardEntry>> OnLeaderBoardListMade)
+        private void ProcessLeaderBoardScores(LeaderboardScoreData data, int limit, Action<int, List<LeaderBoardEntry>> OnLeaderBoardListMade)
         {
             if (data.Status != ResponseStatus.Success)
             {
@@ -159,6 +161,16 @@ namespace WordSearch
             {
                 IScore tempScore = data.Scores[i];
                 _lbEntries.Add(new LeaderBoardEntry(tempScore.userID, tempScore.rank, tempScore.value));
+            }
+
+            // Keep the last entry for player data | Player not on main leaderboard list
+            if (data.PlayerScore.rank > limit)
+            {
+                _lbEntries.Add(new LeaderBoardEntry(data.PlayerScore.userID, data.PlayerScore.rank, data.PlayerScore.value));
+            }
+            else
+            {
+                _lbEntries.Add(new LeaderBoardEntry(null, data.PlayerScore.rank, 0));
             }
 
             OnLeaderBoardListMade?.Invoke((int)LeaderBoardResult.SUCCESS, _lbEntries);
