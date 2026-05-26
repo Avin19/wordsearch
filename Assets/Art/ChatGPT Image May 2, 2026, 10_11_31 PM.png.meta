@@ -190,10 +190,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_2
       rect:
         serializedVersion: 2
-        x: 150
-        y: 1403
-        width: 253
-        height: 94
+        x: 161
+        y: 1409
+        width: 240
+        height: 84
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,13 +212,13 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_3
       rect:
         serializedVersion: 2
-        x: 408
-        y: 1398
-        width: 265
-        height: 102
+        x: 417
+        y: 1407
+        width: 248
+        height: 88
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 38, y: 0, z: 38, w: 0}
       customData: 
       outline: []
       physicsShape: []
@@ -234,10 +234,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_4
       rect:
         serializedVersion: 2
-        x: 677
-        y: 1396
-        width: 226
-        height: 116
+        x: 686
+        y: 1408
+        width: 210
+        height: 98
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -256,10 +256,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_5
       rect:
         serializedVersion: 2
-        x: 904
+        x: 912
         y: 1400
-        width: 120
-        height: 97
+        width: 96
+        height: 101
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -300,10 +300,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_8
       rect:
         serializedVersion: 2
-        x: 40
-        y: 62
-        width: 117
-        height: 128
+        x: 66
+        y: 98
+        width: 64
+        height: 76
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -322,10 +322,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_9
       rect:
         serializedVersion: 2
-        x: 190
-        y: 57
-        width: 107
-        height: 136
+        x: 196
+        y: 71
+        width: 96
+        height: 116
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -344,10 +344,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_10
       rect:
         serializedVersion: 2
-        x: 358
-        y: 67
-        width: 100
-        height: 125
+        x: 364
+        y: 72
+        width: 96
+        height: 116
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -366,9 +366,9 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_11
       rect:
         serializedVersion: 2
-        x: 494
+        x: 521
         y: 69
-        width: 147
+        width: 96
         height: 116
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -388,10 +388,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_12
       rect:
         serializedVersion: 2
-        x: 673
-        y: 67
-        width: 137
-        height: 127
+        x: 676
+        y: 78
+        width: 116
+        height: 112
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -410,10 +410,10 @@ TextureImporter:
       name: ChatGPT Image May 2, 2026, 10_11_31 PM_13
       rect:
         serializedVersion: 2
-        x: 829
-        y: 64
-        width: 141
-        height: 139
+        x: 837
+        y: 69
+        width: 120
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -424,6 +424,28 @@ TextureImporter:
       bones: []
       spriteID: d71e41e05866f73d0800000000000000
       internalID: -3206731688011570819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChatGPT Image May 2, 2026, 10_11_31 PM_1
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 1036
+        width: 276
+        height: 80
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e503893eff1e0bb469365b0368072f34
+      internalID: -8927769257743181694
       vertices: []
       indices: 
       edges: []
