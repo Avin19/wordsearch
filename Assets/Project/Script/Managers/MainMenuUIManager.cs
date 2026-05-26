@@ -30,14 +30,14 @@ namespace WordSearch
 		[SerializeField] private Button _settingsBt, _soundBt, _rateUsBt, _privacyBt;
 
 		[SerializeField] private Button _closeBuyCoinsBt, _closeDailyRewardBt;
-		[SerializeField] private Button _closeLevelMapBt, _closeLeaderBoardBt;
+		[SerializeField] private Button _closeLevelMapBt;                           //, _closeLeaderBoardBt;
 		[SerializeField] private Button _closeSettingsBt, _closePrivacyBt;
 
 		//			PANELS
 		[Header("Panels")]
 		[SerializeField] private RectTransform _mainMenuPanel;
 		[SerializeField] private RectTransform _buyCoinsPanel, _dailyRewardsPanel;
-		[SerializeField] private RectTransform _levelMapPanel, _leaderBoardPanel;
+		[SerializeField] private RectTransform _levelMapPanel;                      //, _leaderBoardPanel;
 		[SerializeField] private RectTransform _settingsPanel, _privacyPanel;
 
 		//			TRANSITION
@@ -81,7 +81,7 @@ namespace WordSearch
 			_closeDailyRewardBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.DAILY_REWARD_REQ, false));
 
 			_closeLevelMapBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.LEVEL_REQ, false));
-			_closeLeaderBoardBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.LEADERBOARD_REQ, false));
+			// _closeLeaderBoardBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.LEADERBOARD_REQ, false));
 
 			_closeSettingsBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.SETTINGS_REQ, false));
 			_closePrivacyBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.PRIVACY_REQ, false));
@@ -117,7 +117,7 @@ namespace WordSearch
 					break;
 
 				case UIInteraction.LEADERBOARD_REQ:
-					_leaderBoardPanel.gameObject.SetActive(status);
+					// _leaderBoardPanel.gameObject.SetActive(status);
 
 					break;
 

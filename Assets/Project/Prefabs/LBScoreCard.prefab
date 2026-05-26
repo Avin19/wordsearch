@@ -525,6 +525,7 @@ GameObject:
   - component: {fileID: 8554355649109636783}
   - component: {fileID: 7370142626619421975}
   - component: {fileID: 6632830773649663250}
+  - component: {fileID: 1408964380108459934}
   m_Layer: 5
   m_Name: LBScoreCard
   m_TagString: Untagged
@@ -595,6 +596,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 5
+--- !u!114 &1408964380108459934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6682560287467450413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ac5678e0113ab342a96ed0a4f3252e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerID: {fileID: 4156184831978214912}
+  _playerRank: {fileID: 4722337520513826013}
+  _playerScore: {fileID: 3576082132526000856}
+  _medalImg: {fileID: 2159557785291493561}
 --- !u!1 &6950285443902094875
 GameObject:
   m_ObjectHideFlags: 0
