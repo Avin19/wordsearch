@@ -15,6 +15,13 @@ namespace WordSearch
         public enum LeaderBoardResult { FAILURE = 0, SUCCESS = 1, ERROR = 2 }
         public enum MedalType { GOLD = 0, SILVER = 1, BRONZE = 2 }
 
+        //                  LOADING
         public enum LoadingPanelStatus { DISABLE, ENABLE, UPDATE }
+
+        //                  API-VALUES
+        public const string GOOGLE_SHEETS_API_KEY = "AIzaSyDGcoCYiLbzkroM54VGKqQMj9pl83pjrfc";
+        public const string SPREADSHEET_ID = "1VqmBuvmj9kNdr1fucZuWyxM-cU3nov0T8TgEefUk808";
+        public const string SHEET_NAME = "Sheet1";
+        public const string WORD_LIST_RANGE = "A1:A100";
     }
 }
