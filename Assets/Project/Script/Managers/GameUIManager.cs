@@ -55,6 +55,7 @@ namespace WordSearch
         private void UpdateWordList(string wordList)
         {
             _wordListTxt.text = wordList;
+            GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.DISABLE, 0f);
         }
 
         // Instantiate a new bar in the selected place

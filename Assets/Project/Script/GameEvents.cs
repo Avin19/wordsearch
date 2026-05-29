@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using static WordSearch.UniversalConstants;
+
 namespace WordSearch
 {
     public static class GameEvents
@@ -20,5 +22,8 @@ namespace WordSearch
         //              LEADERBOARD
         public static Action<int, Action<int>> OnSubmitScore;
         public static Action<int, int, Action<int, List<LeaderBoardEntry>>> OnFetchScore;
+
+        //              LOADING PANEL
+        public static Action<LoadingPanelStatus, float> OnLoadingUpdate;
     }
 }

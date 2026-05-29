@@ -2810,6 +2810,7 @@ MonoBehaviour:
   - {fileID: -5877344549998685188, guid: fbc11d82237143346808269ac5a6dd9a, type: 3}
   - {fileID: 5821678655186552578, guid: fbc11d82237143346808269ac5a6dd9a, type: 3}
   - {fileID: -4245877052171102653, guid: fbc11d82237143346808269ac5a6dd9a, type: 3}
+  _playerCard: {fileID: 1074876587}
   _playerRankTxt: {fileID: 1245817735}
   _playerScoreTxt: {fileID: 1819727354}
   _playerProgressImg: {fileID: 152084199}

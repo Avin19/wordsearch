@@ -175,5 +175,34 @@ namespace WordSearch
 
             OnLeaderBoardListMade?.Invoke((int)LeaderBoardResult.SUCCESS, _lbEntries);
         }
+
+        #region ResetClock
+        // Weekly Reset time requires UTC time 
+        // Using System clock can be manipulated
+        private TimeSpan GetTimeUntilWeeklyReset()
+        {
+            // 1. Fetch system time in UTC to stay completely independent of the player's device timezone setting
+            DateTime utcNow = DateTime.UtcNow;
+
+            // 2. Adjust directly to Google's static UTC-7 leaderboard timezone
+            DateTime googleTime = utcNow.AddHours(-7);
+
+            // 3. Compute how many calendar days away the next Sunday is (DayOfWeek.Sunday == 0)
+            int daysUntilSunday = ((int)DayOfWeek.Sunday - (int)googleTime.DayOfWeek + 7) % 7;
+
+            // 4. Target midnight (00:00:00) on that target day
+            DateTime nextReset = googleTime.Date.AddDays(daysUntilSunday);
+
+            // Edge Case: If today IS Sunday and midnight has already passed, 
+            // the target needs to clear out to the following Sunday.
+            if (daysUntilSunday == 0 && googleTime.TimeOfDay.TotalSeconds > 0)
+            {
+                nextReset = nextReset.AddDays(7);
+            }
+
+            // 5. Calculate the remaining span
+            return nextReset - googleTime;
+        }
+        #endregion ResetClock
     }
 }

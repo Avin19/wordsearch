@@ -40,13 +40,6 @@ namespace WordSearch
 		[SerializeField] private RectTransform _levelMapPanel;                      //, _leaderBoardPanel;
 		[SerializeField] private RectTransform _settingsPanel, _privacyPanel;
 
-		//			TRANSITION
-		[Header("Transition")]
-		[SerializeField] private RectTransform _loadingPanel;
-		[SerializeField] private Image _loadingBarFillImg;
-
-		private float _loadingBarSize;
-
 		//			IMAGES
 		[Header("Images")]
 		[SerializeField] private Sprite[] _uiSprites;
@@ -56,10 +49,7 @@ namespace WordSearch
 
 		private void Start()
 		{
-			Vector2 barSize = _loadingBarFillImg.rectTransform.sizeDelta;
-			_loadingBarSize = barSize.x;
-			barSize.x = 0f;
-			_loadingBarFillImg.rectTransform.sizeDelta = barSize;
+			PreloadLoadingPanel();
 
 			//				OPEN
 			_buyCoinsBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.BUY_COINS_REQ, true));
@@ -104,7 +94,8 @@ namespace WordSearch
 
 				case UIInteraction.PLAY_GAME_REQ:
 					_mainMenuPanel.gameObject.SetActive(false);
-					StartCoroutine(LoadMainGameplay());
+					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_GAMEPLAY);
+					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
 
 					return;
 
@@ -155,32 +146,9 @@ namespace WordSearch
 			}
 		}
 
-		//TODO: Load additive and remove loading screen only after the level is properly loaded
-		private IEnumerator LoadMainGameplay()
+		private void PreloadLoadingPanel()
 		{
-			_loadingPanel.gameObject.SetActive(true);
-			Vector2 barSize = _loadingBarFillImg.rectTransform.sizeDelta;
-			AsyncOperation loadOp = SceneManager.LoadSceneAsync((int)SceneIndex.MAIN_GAMEPLAY);     //, LoadSceneMode.Additive);
-
-			// float testProgress = 0f;
-			// float testMult = 0.25f;
-
-			// while (testProgress < 1f)
-			while (!loadOp.isDone)
-			{
-				// testProgress += Time.deltaTime * testMult;
-				// barSize.x = testProgress * _loadingBarSize;
-
-				float progress = Mathf.Clamp01(loadOp.progress / 0.9f);
-				barSize.x = progress * _loadingBarSize;
-
-				_loadingBarFillImg.rectTransform.sizeDelta = barSize;
-				// Debug.Log("Loading progress: " + (progress * 100) + "%");
-
-				yield return null;
-			}
-			barSize.x = _loadingBarSize;
-			_loadingBarFillImg.rectTransform.sizeDelta = barSize;
+			SceneManager.LoadSceneAsync((int)SceneIndex.LOADING_PANEL, LoadSceneMode.Additive);
 		}
 	}
 }
