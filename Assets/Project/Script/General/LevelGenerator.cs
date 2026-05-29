@@ -70,8 +70,8 @@ namespace WordSearch
                 while (!newIndex)
                 {
                     wordToUseIndex = _randomWordIndex.Next(0, wordArr.Length);
-                    for (int j = 0; j < wordIndex.Length; i++)
-                        newIndex |= (wordIndex[j] == wordToUseIndex);
+                    for (int j = 0; j < wordIndex.Length; j++)
+                        newIndex |= (wordIndex[j] != wordToUseIndex);
                 }
 
                 while (!placed && attempts < MAX_ATTEMPTS)
@@ -166,7 +166,10 @@ namespace WordSearch
 
                 // If the cell is not empty AND it's not the same letter, we have a collision
                 if (currentCell != '-' && currentCell != word[i])
+                {
+                    solution = 0;               // Reset Flags
                     return false;
+                }
             }
 
             // Place the word

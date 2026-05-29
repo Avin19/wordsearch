@@ -1,9 +1,10 @@
 #define TEST_GRID
 
-using System;
 using System.Text;
+using System.Threading.Tasks;
 
 using UnityEngine;
+
 using static WordSearch.UniversalConstants;
 
 namespace WordSearch
@@ -60,11 +61,18 @@ namespace WordSearch
             _gridBuilder = new StringBuilder();
             _levelGenerator = new LevelGenerator(GRID_SIZE);
 
-            GameEvents.OnDragEnded += CheckForSelectedWord;
+            InitializeLevel();
 
+            GameEvents.OnDragEnded += CheckForSelectedWord;
+        }
+
+        private async void InitializeLevel()
+        {
+            await Task.Delay(1000);             // Wait a second for everythhing to catch up
+
+            InitializeGridWithRandom();
 #if TEST_GRID
             // TestFillGrid();
-            InitializeGridWithRandom();
             PrintSolutionArr();
             // PrintGeneratedLevel();
 #endif
