@@ -1,5 +1,3 @@
-using System.Collections;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -79,15 +77,17 @@ namespace WordSearch
 
 			// 					TEST
 			TestWordListApi();
+
+#if UNITY_EDITOR
+			PlayerPrefs.SetInt("CurrentScene", (int)SceneIndex.MAIN_MENU);
+#endif
 		}
 
 		private void TestWordListApi()
 		{
-			GoogleSheetResponse sheetResponse;
 			StartCoroutine(ApiManager.GetWordList((result, status) =>
 			{
-				sheetResponse = JsonUtility.FromJson<GoogleSheetResponse>(result);
-				Debug.Log($"Word List | Status: {status} | sheetResponse: \n {sheetResponse}");
+				Debug.Log($"Word List | Status: {status} | result: \n {result}");
 			}));
 		}
 

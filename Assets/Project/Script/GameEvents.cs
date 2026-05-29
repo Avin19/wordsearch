@@ -13,6 +13,8 @@ namespace WordSearch
         public static Action<Vector2Int, Vector2Int> OnDragEnded;
         public static Action<int> OnCorrectSelection;
 
+        public static Action<int> OnGameStatusUpdate;
+
         //              AUDIO
         public static Action OnButtonClick;
         public static Action<int, float> OnGPOneShotSFXReqAsync;

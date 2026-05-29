@@ -1,7 +1,6 @@
-#define TEST_GRID
-#define USE_API
+// #define TEST_GRID
+// #define USE_API
 
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
@@ -24,13 +23,14 @@ namespace WordSearch
 
         private StringBuilder _gridBuilder;
 
+        private int _wordsFound;
+
         //          API
         private string[] _apiWordArr;
         private GoogleSheetResponse sheetResponse;
 
         //          SCRIPTS
         LevelGenerator _levelGenerator;
-
 
         private const int TOTAL_ROWS = 10;
 
@@ -198,6 +198,10 @@ namespace WordSearch
                 if (selectedSol == _solutionArr[i])
                 {
                     GameEvents.OnCorrectSelection?.Invoke(i);
+                    _wordsFound++;
+
+                    if (_wordsFound == GRID_SIZE)
+                        GameEvents.OnGameStatusUpdate?.Invoke((int)GameStatus.WON);
                     // Debug.Log($"Selected Solution: {selectedSol} | selectedLength: {selectedLength} | Found at: {i}");
                 }
             }
@@ -263,7 +267,6 @@ namespace WordSearch
             }
 
             Debug.Log("Solution:\n" + _gridBuilder);
-
         }
     }
 }

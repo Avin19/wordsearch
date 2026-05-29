@@ -15,6 +15,16 @@ namespace WordSearch
         public enum LeaderBoardResult { FAILURE = 0, SUCCESS = 1, ERROR = 2 }
         public enum MedalType { GOLD = 0, SILVER = 1, BRONZE = 2 }
 
+        public enum GameStatus
+        {
+            NOT_STARTED = 0,
+            PLAYING = (1 << 0),
+            PAUSED = (1 << 1),
+            WON = (1 << 2),
+            LOST = (1 << 3),
+            LEADERBOARD = (1 << 4)
+        }
+
         //                  LOADING
         public enum LoadingPanelStatus { DISABLE, ENABLE, UPDATE }
 

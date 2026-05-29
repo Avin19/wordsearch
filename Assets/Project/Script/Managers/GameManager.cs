@@ -6,6 +6,8 @@ using UnityEngine;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 using static WordSearch.UniversalConstants;
+using UnityEngine.SceneManagement;
+using System;
 
 namespace WordSearch
 {
@@ -18,12 +20,13 @@ namespace WordSearch
         private bool _initalPosSet;
         private Vector2 _resRatio;
 
+        private int _gameStatus = (int)GameStatus.NOT_STARTED;
+
         // private const float CANVAS_HEIGHT = 1544;
 
         //              TEST
         [SerializeField] private RectTransform _mainCanvas;
         private float _canvasWidthOffset;
-
 
         private const int GRID_X_OFFSET = -13, GRID_Y_OFFSET = 17;
         private const float DRAG_BOUND_OFFSET = 15;
@@ -36,12 +39,12 @@ namespace WordSearch
 
         // TOP_LEFT_INDEX: [-7, 5], BOTTOM_RIGHT_INDEX: [2, -4];
 
-
-
         void Start()
         {
             _resRatio.x = _mainCanvas.sizeDelta.x / Screen.width;
             _resRatio.y = _mainCanvas.sizeDelta.y / Screen.height;
+
+            _gameStatus |= (int)GameStatus.PLAYING;
 
             // _resRatio.x = Screen.width / _mainCanvas.sizeDelta.x ;
             // _resRatio.y = Screen.height /_mainCanvas.sizeDelta.y ;
@@ -52,14 +55,34 @@ namespace WordSearch
 
             UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
 
+            //              ACTIONS
+            GameEvents.OnGameStatusUpdate += HandleStatusUpdate;
+
             // FillCirclesWhole();
+
+#if UNITY_EDITOR
+            if (PlayerPrefs.GetInt("CurrentScene", -1) != (int)SceneIndex.MAIN_MENU)
+            {
+                SceneManager.LoadSceneAsync((int)SceneIndex.LOADING_PANEL, LoadSceneMode.Additive);
+            }
+#endif
         }
+
 
         void LateUpdate()
         {
-            // TestTouch();
-            // TestTouch2();
-            TestTouch3();
+            HandleTouchInput();
+        }
+
+        private void HandleStatusUpdate(int status)
+        {
+            switch ((GameStatus)status)
+            {
+                case GameStatus.WON:
+                    GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
+
+                    break;
+            }
         }
 
 #if DEBUG_CELL_PLACEMENT
@@ -80,7 +103,7 @@ namespace WordSearch
         [SerializeField] float testTouchYDragOffset;
 #endif
 
-        private void TestTouch3()
+        private void HandleTouchInput()
         {
             if (Touch.activeTouches.Count != 0)
             {

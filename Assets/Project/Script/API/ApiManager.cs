@@ -16,7 +16,7 @@ namespace WordSearch.API
 
 		public static IEnumerator GetWordList(Action<string, HttpStatusCode> OnResultReceived)
 		{
-			Debug.Log($"Checking URL: {_wordListURL}");
+			// Debug.Log($"Checking URL: {_wordListURL}");
 			using (UnityWebRequest webRequest = UnityWebRequest.Get(_wordListWithRangeURL))
 			{
 				yield return webRequest.SendWebRequest();
@@ -24,17 +24,17 @@ namespace WordSearch.API
 				HttpStatusCode statusCode = (HttpStatusCode)webRequest.responseCode;
 				if (webRequest.result == UnityWebRequest.Result.Success)
 				{
-					Debug.Log("Received: " + webRequest.downloadHandler.text);
+					// Debug.Log("Received: " + webRequest.downloadHandler.text);
 					OnResultReceived?.Invoke(webRequest.downloadHandler.text, statusCode);
 				}
 				else if (webRequest.result == UnityWebRequest.Result.ProtocolError)
 				{
-					Debug.LogError("ProtocolError: " + webRequest.error);
+					// Debug.LogError("ProtocolError: " + webRequest.error);
 					OnResultReceived?.Invoke(webRequest.downloadHandler.text, statusCode);
 				}
 				else // if (webRequest.result == UnityWebRequest.Result.ConnectionError)
 				{
-					Debug.LogError("Error: " + webRequest.error);
+					// Debug.LogError("Error: " + webRequest.error);
 					OnResultReceived?.Invoke(webRequest.error, statusCode);
 				}
 			}
