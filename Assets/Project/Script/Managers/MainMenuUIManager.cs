@@ -1,9 +1,10 @@
 using System.Collections;
-
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+using WordSearch.API;
 using static WordSearch.UniversalConstants;
 
 namespace WordSearch
@@ -75,6 +76,19 @@ namespace WordSearch
 
 			_closeSettingsBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.SETTINGS_REQ, false));
 			_closePrivacyBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.PRIVACY_REQ, false));
+
+			// 					TEST
+			TestWordListApi();
+		}
+
+		private void TestWordListApi()
+		{
+			GoogleSheetResponse sheetResponse;
+			StartCoroutine(ApiManager.GetWordList((result, status) =>
+			{
+				sheetResponse = JsonUtility.FromJson<GoogleSheetResponse>(result);
+				Debug.Log($"Word List | Status: {status} | sheetResponse: \n {sheetResponse}");
+			}));
 		}
 
 		private void HandleUIInteraction(UIInteraction interaction, bool status = false)
@@ -94,8 +108,8 @@ namespace WordSearch
 
 				case UIInteraction.PLAY_GAME_REQ:
 					_mainMenuPanel.gameObject.SetActive(false);
-					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_GAMEPLAY);
 					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
+					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_GAMEPLAY);
 
 					return;
 

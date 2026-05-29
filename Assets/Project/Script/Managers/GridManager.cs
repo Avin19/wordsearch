@@ -1,10 +1,15 @@
 #define TEST_GRID
+#define USE_API
 
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 using UnityEngine;
 
+using WordSearch.API;
+using Newtonsoft.Json;
 using static WordSearch.UniversalConstants;
 
 namespace WordSearch
@@ -19,8 +24,13 @@ namespace WordSearch
 
         private StringBuilder _gridBuilder;
 
+        //          API
+        private string[] _apiWordArr;
+        private GoogleSheetResponse sheetResponse;
+
         //          SCRIPTS
         LevelGenerator _levelGenerator;
+
 
         private const int TOTAL_ROWS = 10;
 
@@ -39,6 +49,7 @@ namespace WordSearch
             "ONLY",  "TAKE",   "NOT",     "PRIDE", "WHAT",    "ELEGANT",  "DIVE",   "CASH",
             "SURE",  "SYMBOL", "FOR",     "FREE",  "TESTIFY", "BERRY",    "EMPIRE", "RAISE"
         };
+
 
         //              TEST
         private readonly string[] _testGrid = new string[]
@@ -60,10 +71,42 @@ namespace WordSearch
         {
             _gridBuilder = new StringBuilder();
             _levelGenerator = new LevelGenerator(GRID_SIZE);
+            sheetResponse = new GoogleSheetResponse();
 
+#if USE_API
+            StartCoroutine(ApiManager.GetWordList(GetAndParseWordList));
+#else
             InitializeLevel();
+#endif
 
             GameEvents.OnDragEnded += CheckForSelectedWord;
+        }
+
+        private void GetAndParseWordList(string result, HttpStatusCode status)
+        {
+            sheetResponse = JsonConvert.DeserializeObject<GoogleSheetResponse>(result);
+            // Debug.Log($"Word List | Status: {status} | result: \n {result}");
+
+            int wordCount = sheetResponse.values.Count;
+            _apiWordArr = new string[wordCount];
+
+            // [IMP] Only considering the first column value
+            for (int i = 0; i < wordCount; i++)
+                _apiWordArr[i] = sheetResponse.values[i][0];
+
+            // Multi-Column Values
+            // [IMP] All the columns of the rows should be equal
+            // int colCount = sheetResponse.values[0].Count;
+            // _apiWordArr = new string[wordCount * colCount];
+            // for (int i = 0; i < wordCount; i++)
+            // {
+            //     for (int j = 0; j < colCount; j++)
+            //     {
+            //         _apiWordArr[i] = sheetResponse.values[i][j];
+            //     }
+            // }
+
+            InitializeLevel();
         }
 
         private async void InitializeLevel()
@@ -71,6 +114,7 @@ namespace WordSearch
             await Task.Delay(1000);             // Wait a second for everythhing to catch up
 
             InitializeGridWithRandom();
+
 #if TEST_GRID
             // TestFillGrid();
             PrintSolutionArr();
@@ -162,7 +206,12 @@ namespace WordSearch
         private void InitializeGridWithRandom()
         {
             int[] wordIndex;
+
+#if USE_API
+            _levelGenerator.Generate(_apiWordArr, out _randWordGrid, out _solutionArr, out wordIndex);
+#else
             _levelGenerator.Generate(_wordArr, out _randWordGrid, out _solutionArr, out wordIndex);
+#endif
 
             int row, col;
             _gridBuilder.Clear();

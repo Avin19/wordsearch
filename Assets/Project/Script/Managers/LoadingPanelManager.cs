@@ -1,5 +1,5 @@
-using System;
 using System.Collections;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -15,10 +15,14 @@ namespace WordSearch
         [SerializeField] private RectTransform _loadingPanel;
         [SerializeField] private Image _loadingBarFillImg;
 
+        private WaitForSeconds _waitFor1Second;
+
         private float _loadingBarSize;
 
         void Start()
         {
+            _waitFor1Second = new WaitForSeconds(1f);
+
             Vector2 barSize = _loadingBarFillImg.rectTransform.sizeDelta;
             _loadingBarSize = barSize.x;
             barSize.x = 0f;
@@ -29,6 +33,7 @@ namespace WordSearch
 
         private void UpdateLoadingBarUI(LoadingPanelStatus status, float value)
         {
+            Debug.Log($"UpdateLoadingBarUI called | status: {status}");
             switch (status)
             {
                 case LoadingPanelStatus.DISABLE:
@@ -54,6 +59,8 @@ namespace WordSearch
         //TODO: Load additive and remove loading screen only after the level is properly loaded
         private IEnumerator LoadSceneAsync(int sceneIndex)
         {
+            yield return _waitFor1Second;                     // Wait a second before loading
+
             Vector2 barSize = _loadingBarFillImg.rectTransform.sizeDelta;
             AsyncOperation loadOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Additive);     //, LoadSceneMode.Additive);
 

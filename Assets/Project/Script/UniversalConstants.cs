@@ -22,6 +22,6 @@ namespace WordSearch
         public const string GOOGLE_SHEETS_API_KEY = "AIzaSyDGcoCYiLbzkroM54VGKqQMj9pl83pjrfc";
         public const string SPREADSHEET_ID = "1VqmBuvmj9kNdr1fucZuWyxM-cU3nov0T8TgEefUk808";
         public const string SHEET_NAME = "Sheet1";
-        public const string WORD_LIST_RANGE = "A1:A100";
+        public const string WORD_LIST_RANGE = "B1:B100";
     }
 }

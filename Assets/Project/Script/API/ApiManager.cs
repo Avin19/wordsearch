@@ -17,7 +17,7 @@ namespace WordSearch.API
 		public static IEnumerator GetWordList(Action<string, HttpStatusCode> OnResultReceived)
 		{
 			Debug.Log($"Checking URL: {_wordListURL}");
-			using (UnityWebRequest webRequest = UnityWebRequest.Get(_wordListURL))
+			using (UnityWebRequest webRequest = UnityWebRequest.Get(_wordListWithRangeURL))
 			{
 				yield return webRequest.SendWebRequest();
 
