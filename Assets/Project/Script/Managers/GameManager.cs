@@ -79,7 +79,6 @@ namespace WordSearch
             switch ((GameStatus)status)
             {
                 case GameStatus.WON:
-                    GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
 
                     break;
             }

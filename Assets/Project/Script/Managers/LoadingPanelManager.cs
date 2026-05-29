@@ -28,6 +28,7 @@ namespace WordSearch
             barSize.x = 0f;
             _loadingBarFillImg.rectTransform.sizeDelta = barSize;
 
+            //              ACITONS
             GameEvents.OnLoadingUpdate += UpdateLoadingBarUI;
         }
 

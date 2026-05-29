@@ -1,6 +1,7 @@
 using System;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 using static WordSearch.UniversalConstants;
@@ -9,6 +10,11 @@ namespace WordSearch
 {
     public class GameUIManager : MonoBehaviour
     {
+        enum GameUIInteraction
+        {
+            MAIN_MENU_REQ, NEXT_LEVEL_REQ, LEADERBOARD_REQ,
+        }
+
         [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
 
         //              GRID
@@ -20,6 +26,10 @@ namespace WordSearch
 
         //              START
         [SerializeField] private GameData _gameData;
+
+        [Header("Game Over")]
+        [SerializeField] private RectTransform _gameOverPanel;
+        [SerializeField] private Button _nextLevelBt, _mainMenuBt, _leaderBoardBt;
 
 
         //          HIGHLIGHT
@@ -48,8 +58,45 @@ namespace WordSearch
             _currMonthTxt.text = DateTime.Now.ToString("MMM").ToUpper();
             _currDateTxt.text = DateTime.Now.Day.ToString();
 
+            //              BUTTONS
+            _mainMenuBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.MAIN_MENU_REQ));
+            _nextLevelBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.NEXT_LEVEL_REQ));
+            _leaderBoardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
+
+            //              ACTIONS
             GameEvents.OnLevelGenerated += UpdateWordList;
             GameEvents.OnCorrectSelection += SpawnHighlightBar;
+            GameEvents.OnGameStatusUpdate += HandleStatusUpdate;
+        }
+
+        private void HandleStatusUpdate(int status)
+        {
+            switch ((GameStatus)status)
+            {
+                case GameStatus.WON:
+                    _gameOverPanel.gameObject.SetActive(true);
+
+                    break;
+            }
+        }
+
+        private void HandleUIInteraction(GameUIInteraction interaction)
+        {
+            switch (interaction)
+            {
+                case GameUIInteraction.MAIN_MENU_REQ:
+                    SceneManager.LoadScene((int)SceneIndex.MAIN_MENU);
+
+                    break;
+
+                case GameUIInteraction.NEXT_LEVEL_REQ:
+                    break;
+
+                case GameUIInteraction.LEADERBOARD_REQ:
+                    GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
+
+                    break;
+            }
         }
 
         private void UpdateWordList(string wordList)

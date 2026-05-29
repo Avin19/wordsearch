@@ -21,11 +21,14 @@ namespace WordSearch
             NONE = 0, ACTIVE = 1
         }
 
+        [SerializeField] private RectTransform _leaderboardPanel;
+
         [Header("Buttons")]
         [SerializeField] private Button _weeklyLBBt;
         [SerializeField] private Button _allTimeLBBt, _friendsLBBt;
         [SerializeField] private Button _buyCoinsBt;
         [SerializeField] private Button _closeLBBt, _infoLBBt;
+        [SerializeField] private Button _backBt;
 
         [SerializeField] private Color[] _btColors;
         private Button _prevActiveBt;
@@ -64,6 +67,8 @@ namespace WordSearch
             _buyCoinsBt.onClick.AddListener(() => HandleInteraction(UIInteraction.BUY_COINS_REQ));
             _closeLBBt.onClick.AddListener(() => HandleInteraction(UIInteraction.CLOSE_LB_REQ));
             _infoLBBt.onClick.AddListener(() => HandleInteraction(UIInteraction.INFO_LB_REQ));
+
+            _backBt.onClick.AddListener(() => _leaderboardPanel.gameObject.SetActive(false));
         }
 
         private void HandleInteraction(UIInteraction interaction)
