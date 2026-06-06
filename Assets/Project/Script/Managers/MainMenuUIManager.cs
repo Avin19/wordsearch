@@ -44,7 +44,8 @@ namespace WordSearch
 		[SerializeField] private Sprite[] _uiSprites;
 		[SerializeField] private Image _soundBtImg;
 
-		[SerializeField] private GameData _gameData;
+        [Header("Game Data")]
+        [SerializeField] private GameData _gameData;
 
 		private void Start()
 		{
@@ -110,6 +111,7 @@ namespace WordSearch
 					_mainMenuPanel.gameObject.SetActive(false);
 					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
 					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_GAMEPLAY);
+					_gameData.PrevSceneIndex = SceneIndex.MAIN_MENU;
 
 					return;
 
@@ -126,6 +128,7 @@ namespace WordSearch
 					_mainMenuPanel.gameObject.SetActive(false);
 					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
 					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
+					_gameData.PrevSceneIndex = SceneIndex.MAIN_MENU;
 
 					break;
 

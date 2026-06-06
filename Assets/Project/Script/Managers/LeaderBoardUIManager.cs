@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 using static WordSearch.UniversalConstants;
@@ -51,6 +52,9 @@ namespace WordSearch
         [SerializeField] private TMPro.TMP_Text _playerRankTxt;
         [SerializeField] private TMPro.TMP_Text _playerScoreTxt;
         [SerializeField] private Image _playerProgressImg;
+
+        [Header("Game Data")]
+        [SerializeField] private GameData _gameData;
 
         private const string PLAYER_LABEL = "You";
 
@@ -123,6 +127,10 @@ namespace WordSearch
                     break;
 
                 case UIInteraction.CLOSE_LB_REQ:
+					SceneManager.UnloadSceneAsync((int)SceneIndex.LEADERBOARD);
+					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)_gameData.PrevSceneIndex);
+					_gameData.PrevSceneIndex = SceneIndex.LEADERBOARD;
+
                     break;
 
                 case UIInteraction.INFO_LB_REQ:
