@@ -116,8 +116,9 @@ namespace WordSearch
             }
 
             OnComplete?.Invoke((int)LeaderBoardResult.SUCCESS, _lbEntries);
-            return;
-#endif
+
+ #else
+ 
             LeaderboardTimeSpan lbTimeSpan = LeaderboardTimeSpan.AllTime;
             LeaderboardCollection lbCollection = LeaderboardCollection.Public;
 
@@ -150,6 +151,7 @@ namespace WordSearch
                 lbTimeSpan,
                 (LeaderboardScoreData data) => ProcessLeaderBoardScores(data, limit, OnComplete)
             );
+#endif
         }
 
         private void ProcessLeaderBoardScores(LeaderboardScoreData data, int limit, Action<int, List<LeaderBoardEntry>> OnLeaderBoardListMade)

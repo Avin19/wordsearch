@@ -615,6 +615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _loadingPanel: {fileID: 1552639958}
   _loadingBarFillImg: {fileID: 1253246504}
+  _gameData: {fileID: 11400000, guid: 222d36caf5dbd1248951f1198e24bf1c, type: 2}
 --- !u!4 &663074318
 Transform:
   m_ObjectHideFlags: 0

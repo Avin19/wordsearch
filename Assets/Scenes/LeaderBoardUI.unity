@@ -2817,6 +2817,7 @@ MonoBehaviour:
   _playerRankTxt: {fileID: 1245817735}
   _playerScoreTxt: {fileID: 1819727354}
   _playerProgressImg: {fileID: 152084199}
+  _gameData: {fileID: 11400000, guid: 222d36caf5dbd1248951f1198e24bf1c, type: 2}
   testLBEntries: []
 --- !u!1 &1819727352
 GameObject:

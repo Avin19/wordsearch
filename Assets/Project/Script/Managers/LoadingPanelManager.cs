@@ -15,9 +15,17 @@ namespace WordSearch
         [SerializeField] private RectTransform _loadingPanel;
         [SerializeField] private Image _loadingBarFillImg;
 
+		[Header("Game Data")]
+		[SerializeField] private GameData _gameData;
+
         private WaitForSeconds _waitFor1Second;
 
         private float _loadingBarSize;
+
+        private void OnDestroy()
+        {
+            _gameData.LoadingPanelAvailable = false;
+        }
 
         void Start()
         {

@@ -44,8 +44,8 @@ namespace WordSearch
 		[SerializeField] private Sprite[] _uiSprites;
 		[SerializeField] private Image _soundBtImg;
 
-        [Header("Game Data")]
-        [SerializeField] private GameData _gameData;
+		[Header("Game Data")]
+		[SerializeField] private GameData _gameData;
 
 		private void Start()
 		{
@@ -168,6 +168,13 @@ namespace WordSearch
 
 		private void PreloadLoadingPanel()
 		{
+			if (_gameData.LoadingPanelAvailable)
+			{
+                GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.DISABLE, 0f);
+				return;
+			}
+
+			_gameData.LoadingPanelAvailable = true;
 			SceneManager.LoadSceneAsync((int)SceneIndex.LOADING_PANEL, LoadSceneMode.Additive);
 		}
 	}

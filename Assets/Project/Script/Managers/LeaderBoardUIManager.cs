@@ -22,7 +22,7 @@ namespace WordSearch
             NONE = 0, ACTIVE = 1
         }
 
-        [SerializeField] private RectTransform _leaderboardPanel;
+        // [SerializeField] private RectTransform _leaderboardPanel;
 
         [Header("Buttons")]
         [SerializeField] private Button _weeklyLBBt;
@@ -71,8 +71,6 @@ namespace WordSearch
             _closeLBBt.onClick.AddListener(() => HandleInteraction(UIInteraction.CLOSE_LB_REQ));
             _infoLBBt.onClick.AddListener(() => HandleInteraction(UIInteraction.INFO_LB_REQ));
 
-            _backBt.onClick.AddListener(() => _leaderboardPanel.gameObject.SetActive(false));
-
             Invoke(nameof(Initialize), 1.0f);           // Wait a sec for events to be assigned
         }
 
@@ -86,7 +84,7 @@ namespace WordSearch
 
         private void HandleInteraction(UIInteraction interaction)
         {
-            Debug.Log($"Interaction Made: {interaction}");
+            // Debug.Log($"Interaction Made: {interaction}");
             LeaderBoardCategory lbCategory = LeaderBoardCategory.ALL_TIME;
 
             switch (interaction)
