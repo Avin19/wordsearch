@@ -76,7 +76,7 @@ namespace WordSearch
 			_closePrivacyBt.onClick.AddListener(() => HandleUIInteraction(UIInteraction.PRIVACY_REQ, false));
 
 			// 					TEST
-			TestWordListApi();
+			// TestWordListApi();
 
 #if UNITY_EDITOR
 			PlayerPrefs.SetInt("CurrentScene", (int)SceneIndex.MAIN_MENU);
@@ -123,6 +123,9 @@ namespace WordSearch
 
 				case UIInteraction.LEADERBOARD_REQ:
 					// _leaderBoardPanel.gameObject.SetActive(status);
+					_mainMenuPanel.gameObject.SetActive(false);
+					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
+					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
 
 					break;
 

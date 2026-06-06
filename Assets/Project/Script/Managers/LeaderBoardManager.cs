@@ -33,14 +33,14 @@ namespace WordSearch
         private const string DEFAULT_TAG = "LB_Score";
 
         private List<LeaderBoardEntry> _lbEntries;
+        private LeaderboardScoreData _testData;
 
         void Start()
         {
-#if !TEST_LEADERBOARD
             PlayGamesPlatform.Activate();
+#if !TEST_LEADERBOARD
             // PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
 #endif
-
             _lbEntries = new List<LeaderBoardEntry>();
 
             GameEvents.OnSubmitScore += SubmitScore;
@@ -88,6 +88,7 @@ namespace WordSearch
                     _lbEntries.Add(new LeaderBoardEntry("PlWeekly4", 4, 17441));
                     _lbEntries.Add(new LeaderBoardEntry("PlWeekly5", 5, 13731));
                     _lbEntries.Add(new LeaderBoardEntry("PlWeekly6", 6, 15621));
+                    _lbEntries.Add(new LeaderBoardEntry("Platyer", 6, 15621));
 
                     break;
 
@@ -98,16 +99,18 @@ namespace WordSearch
                     _lbEntries.Add(new LeaderBoardEntry("PlAllTime4", 4, 17241));
                     _lbEntries.Add(new LeaderBoardEntry("PlAllTime5", 5, 13231));
                     _lbEntries.Add(new LeaderBoardEntry("PlAllTime6", 6, 15631));
+                    _lbEntries.Add(new LeaderBoardEntry("Player", 6, 15631));
 
                     break;
 
                 case LeaderBoardCategory.FRIENDS:
                     _lbEntries.Add(new LeaderBoardEntry("Friend1", 1, 12591));
                     _lbEntries.Add(new LeaderBoardEntry("Friend2", 2, 12191));
-                    _lbEntries.Add(new LeaderBoardEntry("Friend3", 3, 13461));
+                    _lbEntries.Add(new LeaderBoardEntry("Player", 3, 13461));
                     _lbEntries.Add(new LeaderBoardEntry("Friend4", 4, 17541));
                     _lbEntries.Add(new LeaderBoardEntry("Friend5", 5, 13431));
                     _lbEntries.Add(new LeaderBoardEntry("Friend6", 6, 15631));
+                    _lbEntries.Add(new LeaderBoardEntry(null, 3, -1));
 
                     break;
             }

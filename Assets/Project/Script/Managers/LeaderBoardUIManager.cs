@@ -52,7 +52,6 @@ namespace WordSearch
         [SerializeField] private TMPro.TMP_Text _playerScoreTxt;
         [SerializeField] private Image _playerProgressImg;
 
-        private const int PLAYER_LIMIT = 10;
         private const string PLAYER_LABEL = "You";
 
         void Start()
@@ -69,6 +68,16 @@ namespace WordSearch
             _infoLBBt.onClick.AddListener(() => HandleInteraction(UIInteraction.INFO_LB_REQ));
 
             _backBt.onClick.AddListener(() => _leaderboardPanel.gameObject.SetActive(false));
+
+            Invoke(nameof(Initialize), 1.0f);           // Wait a sec for events to be assigned
+        }
+
+        private void Initialize()
+        {
+            GameEvents.OnFetchScore?.Invoke((int)LeaderBoardCategory.WEEKLY, PLAYER_LIMIT, (fetchStatus, lbEntries) => {
+                UpdatePlayerList(fetchStatus, lbEntries);
+                GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.DISABLE, 0f);
+            });
         }
 
         private void HandleInteraction(UIInteraction interaction)
@@ -106,7 +115,7 @@ namespace WordSearch
                     goto case UIInteraction.CALL_FETCH_SCORE;
 
                 case UIInteraction.CALL_FETCH_SCORE:
-                    GameEvents.OnFetchScore((int)lbCategory, PLAYER_LIMIT, UpdatePlayerList);
+                    GameEvents.OnFetchScore?.Invoke((int)lbCategory, PLAYER_LIMIT, UpdatePlayerList);
 
                     break;
 
@@ -121,13 +130,15 @@ namespace WordSearch
             }
         }
 
+public List<LeaderBoardEntry> testLBEntries;
         private void UpdatePlayerList(int fetchStatus, List<LeaderBoardEntry> lbEntries)
         {
+            testLBEntries = lbEntries;
             if (fetchStatus == (int)LeaderBoardResult.FAILURE) return;
 
             int diffNumber = 0;
             if ((lbEntries.Count - 1) > _lbScoreCardList.Count)             // -1 to offset player data
-                diffNumber = lbEntries.Count - _lbScoreCardList.Count;
+                diffNumber = lbEntries.Count - _lbScoreCardList.Count - 1;
 
             for (int i = 0; i < diffNumber; i++)
             {
@@ -139,6 +150,7 @@ namespace WordSearch
             if (string.IsNullOrEmpty(lbEntries[lbEntries.Count - 1].PlayerName))
             {
                 currPlayerRank = lbEntries[lbEntries.Count - 1].PlayerRank;
+                _playerCard.gameObject.SetActive(false);
             }
             else
             {
@@ -157,9 +169,9 @@ namespace WordSearch
                     spriteToUse = _medalSprites[i];
 
                 if (currPlayerRank != -1 && i == currPlayerRank)
-                    scoreCard.SetData(lbEntries[i].PlayerRank, lbEntries[i].PlayerName, lbEntries[i].PlayerScore, spriteToUse);
-                else
                     scoreCard.SetData(lbEntries[i].PlayerRank, PLAYER_LABEL, lbEntries[i].PlayerScore, spriteToUse);
+                else
+                    scoreCard.SetData(lbEntries[i].PlayerRank, lbEntries[i].PlayerName, lbEntries[i].PlayerScore, spriteToUse);
             }
 
             // Player is within the limit requested and on the main list

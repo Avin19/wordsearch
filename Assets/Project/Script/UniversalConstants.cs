@@ -10,7 +10,7 @@ namespace WordSearch
         public const int WORD_VER_FLAG = 0, WORD_DIAG_FLAG = 1;
         public const int LENGTH_VAL_OFFSET = 10, ROW_VAL_OFFSET = 10, ORIENTATION_OFFSET = 2;
 
-        public enum SceneIndex { MAIN_MENU = 0, MAIN_GAMEPLAY = 1, LOADING_PANEL = 2, LEADERBOARD }
+        public enum SceneIndex { MAIN_MENU = 0, MAIN_GAMEPLAY = 1, LOADING_PANEL = 2, LEADERBOARD = 3 }
         public enum LeaderBoardCategory { WEEKLY, ALL_TIME, FRIENDS }
         public enum LeaderBoardResult { FAILURE = 0, SUCCESS = 1, ERROR = 2 }
         public enum MedalType { GOLD = 0, SILVER = 1, BRONZE = 2 }
@@ -27,6 +27,9 @@ namespace WordSearch
 
         //                  LOADING
         public enum LoadingPanelStatus { DISABLE, ENABLE, UPDATE }
+
+        //                  LEADERBOARD
+        public const int PLAYER_LIMIT = 10;
 
         //                  API-VALUES
         public const string GOOGLE_SHEETS_API_KEY = "AIzaSyDGcoCYiLbzkroM54VGKqQMj9pl83pjrfc";
