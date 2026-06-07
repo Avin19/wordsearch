@@ -9919,6 +9919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currMonthTxt: {fileID: 1100232735}
   _currDateTxt: {fileID: 157509141}
+  _backGMBt: {fileID: 1706182019}
   _highlightImg: {fileID: 982244318}
   _highlightContainer: {fileID: 1915307581}
   _wordListTxt: {fileID: 731027393}
@@ -9938,6 +9939,8 @@ MonoBehaviour:
   _nextLevelGOBt: {fileID: 77042518}
   _mainMenuGOBt: {fileID: 1627252772}
   _leaderBoardGOBt: {fileID: 517281482}
+  _timeElapsedTxt: {fileID: 1403839123}
+  _coinsGainedTxt: {fileID: 975665776}
   _claimRewardBt: {fileID: 1546189877}
   _dailyCoinBtCheckmarkImgs:
   - {fileID: 6163541073495844781}

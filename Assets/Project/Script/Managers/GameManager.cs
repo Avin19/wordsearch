@@ -8,17 +8,24 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using static WordSearch.UniversalConstants;
 using UnityEngine.SceneManagement;
 using System;
+using System.Collections;
 
 namespace WordSearch
 {
     public class GameManager : MonoBehaviour
     {
+        
         [SerializeField] private RectTransform _highlightImg;
         [SerializeField] private RectTransform _gridContent;
+
+        //              TOUCH
         private Vector2 _intialTouchPos, _intitalCanvasPos;
         private Vector2Int _initalCellIndex, _prevCellIndex;
         private bool _initalPosSet;
         private Vector2 _resRatio;
+
+        //              GAMEPLAY
+        private float _timeElapsed;
 
         private int _gameStatus = (int)GameStatus.NOT_STARTED;
 
@@ -56,6 +63,7 @@ namespace WordSearch
             _gameStatus |= (int)GameStatus.PLAYING;
 
             Initialize();
+            StartCoroutine(StartTimer());
 
             // _resRatio.x = Screen.width / _mainCanvas.sizeDelta.x ;
             // _resRatio.y = Screen.height /_mainCanvas.sizeDelta.y ;
@@ -95,6 +103,7 @@ namespace WordSearch
             switch ((GameStatus)status)
             {
                 case GameStatus.WON:
+                    _gameStatus = (int)GameStatus.WON;
                     _gameData.PlayerCoinCount += LEVEL_WON_COINS_AMT;
                     PlayerPrefs.SetInt(PLAYER_COIN_COUNT_LABEL, _gameData.PlayerCoinCount);
 
@@ -249,6 +258,16 @@ namespace WordSearch
 
                 _initalPosSet = false;
             }
+        }
+    
+        private IEnumerator StartTimer()
+        {
+            while (_gameStatus != (int)GameStatus.WON)
+            {
+                _timeElapsed += Time.deltaTime;
+                yield return null;
+            }
+            _gameData.LevelCompletionTime = _timeElapsed;
         }
     }
 }

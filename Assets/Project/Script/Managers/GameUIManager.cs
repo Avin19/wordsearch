@@ -1,7 +1,7 @@
 #define RESET_GAME_DATA
 
 using System;
-
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -38,6 +38,7 @@ namespace WordSearch
         [Header("Game Over")]
         [SerializeField] private RectTransform _gameOverPanel;
         [SerializeField] private Button _nextLevelGOBt, _mainMenuGOBt, _leaderBoardGOBt;
+        [SerializeField] private TMPro.TMP_Text _timeElapsedTxt, _coinsGainedTxt;
 
         [Header("Rewards")]
         [SerializeField] private Button _claimRewardBt;
@@ -63,6 +64,9 @@ namespace WordSearch
             new Color(0.2980392f, 0.6039216f, 0.9372549f, 1f),
             new Color(0.8509804f, 0.1333333f, 0.2627451f, 1f),
         };
+
+        //          GAME OVER
+        private const int GO_STATS_WAIT_TIME = 500;
 
         private void OnDestroy()
         {
@@ -122,12 +126,20 @@ namespace WordSearch
             _claimRewardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.CLAIM_DAILY_REWARD_REQ));
         }
 
-        private void HandleStatusUpdate(int status)
+        private async void HandleStatusUpdate(int status)
         {
             switch ((GameStatus)status)
             {
                 case GameStatus.WON:
+                    await Task.Delay(GO_STATS_WAIT_TIME);                      // Wait a bit for stats to update
+
                     _gameOverPanel.gameObject.SetActive(true);
+
+                    int elapsedMinutes = (int)(_gameData.LevelCompletionTime / 60f);
+                    int elapsedSeconds = (int)(_gameData.LevelCompletionTime % 60f);
+                    _timeElapsedTxt.text = $"{elapsedMinutes:D2}:{elapsedSeconds:D2}";
+
+                    _coinsGainedTxt.text = LEVEL_WON_COINS_AMT.ToString();
 
                     break;
 
