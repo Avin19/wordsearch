@@ -26,7 +26,7 @@ namespace WordSearch
             GameEvents.OnToggleMute -= ToggleMute;
         }
 
-        public void Initialize()
+        public void Start()
         {
             MuteEnabled = false;
 
