@@ -1,3 +1,5 @@
+#define RESET_GAME_DATA
+
 using System;
 
 using UnityEngine;
@@ -13,6 +15,7 @@ namespace WordSearch
         enum GameUIInteraction
         {
             MAIN_MENU_REQ, NEXT_LEVEL_REQ, LEADERBOARD_REQ,
+            CLAIM_DAILY_REWARD_REQ
         }
 
         [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
@@ -25,12 +28,17 @@ namespace WordSearch
         [SerializeField] private RectTransform[] _wordCorrectArr;
 
         //              START
+        [Header("Game Data")]
         [SerializeField] private GameData _gameData;
 
         [Header("Game Over")]
         [SerializeField] private RectTransform _gameOverPanel;
         [SerializeField] private Button _nextLevelBt, _mainMenuBt, _leaderBoardBt;
 
+        [Header("Rewards")]
+        [SerializeField] private Button _claimRewardBt;
+        [SerializeField] private RectTransform[] _dailyCoinBtCheckmarkImgs;
+        [SerializeField] private int[] _dailyCoinsAmt;
 
         //          HIGHLIGHT
         // private static readonly Color CorrectSelection = new Color(0f, 0.8396226f, 0.1217717f, 1f);
@@ -52,8 +60,19 @@ namespace WordSearch
             new Color(0.8509804f, 0.1333333f, 0.2627451f, 1f),
         };
 
+        private void OnDestroy()
+        {
+#if UNITY_EDITOR && RESET_GAME_DATA
+            _gameData.PlayerCoinCount = 0;
+            _gameData.DailyLoginCount = 0;
+            _gameData.RewardCollected = false;
+#endif
+        }
+
         void Start()
         {
+            PlayerPrefs.DeleteAll();            //TEST
+
             // Debug.Log($"Month: {DateTime.Today.Month} | Date: {DateTime.Today.Day}");
             _currMonthTxt.text = DateTime.Now.ToString("MMM").ToUpper();
             _currDateTxt.text = DateTime.Now.Day.ToString();
@@ -62,11 +81,32 @@ namespace WordSearch
             _mainMenuBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.MAIN_MENU_REQ));
             _nextLevelBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.NEXT_LEVEL_REQ));
             _leaderBoardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
+            InitializeRewardsUI();
 
             //              ACTIONS
             GameEvents.OnLevelGenerated += UpdateWordList;
             GameEvents.OnCorrectSelection += SpawnHighlightBar;
             GameEvents.OnGameStatusUpdate += HandleStatusUpdate;
+        }
+
+        private void InitializeRewardsUI()
+        {
+            int loginCount = PlayerPrefs.GetInt(DAILY_LOGIN_COUNT_LABEL, 0);
+
+            if (_gameData.RewardCollected)
+            {
+                _claimRewardBt.interactable = false;
+                return;     // Already taken the reward
+            }
+
+            _gameData.DailyLoginCount = loginCount;
+
+            // Update the tickmark on all previous bts as they have been claimed or not active
+            // As bts start inactive, no need to toggle interactable
+            for (int i = 0; i < loginCount; i++)
+                _dailyCoinBtCheckmarkImgs[i].gameObject.SetActive(true);
+
+            _claimRewardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.CLAIM_DAILY_REWARD_REQ));
         }
 
         private void HandleStatusUpdate(int status)
@@ -80,7 +120,7 @@ namespace WordSearch
             }
         }
 
-        private void HandleUIInteraction(GameUIInteraction interaction)
+        private void HandleUIInteraction(GameUIInteraction interaction, float value = 0)
         {
             switch (interaction)
             {
@@ -94,6 +134,29 @@ namespace WordSearch
 
                 case GameUIInteraction.LEADERBOARD_REQ:
                     GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
+
+                    break;
+
+                case GameUIInteraction.CLAIM_DAILY_REWARD_REQ:
+                    // int loginCount = PlayerPrefs.GetInt(DAILY_LOGIN_COUNT_LABEL, -1);
+                    _claimRewardBt.interactable = false;
+                    _gameData.RewardCollected = true;
+
+                    _dailyCoinBtCheckmarkImgs[_gameData.DailyLoginCount].gameObject.SetActive(true);
+                    _gameData.DailyLoginCount++;
+
+                    //TODO: Extra bonus?
+                    if (_gameData.DailyLoginCount >= 6)        // Reset back to 0 | Bonus for 7 days login
+                    {
+
+                        _gameData.PlayerCoinCount += _dailyCoinsAmt[6];
+                        _gameData.DailyLoginCount = 0;
+                    }
+                    else
+                        _gameData.PlayerCoinCount += _dailyCoinsAmt[_gameData.DailyLoginCount];
+
+                    PlayerPrefs.SetInt(DAILY_LOGIN_COUNT_LABEL, _gameData.DailyLoginCount);
+                    PlayerPrefs.SetInt(PLAYER_COIN_COUNT_LABEL, _gameData.PlayerCoinCount);
 
                     break;
             }

@@ -24,7 +24,11 @@ namespace WordSearch
 
         // private const float CANVAS_HEIGHT = 1544;
 
+		[Header("Game Data")]
+		[SerializeField] private GameData _gameData;
+
         //              TEST
+		[Header("Canvas")]        
         [SerializeField] private RectTransform _mainCanvas;
         private float _canvasWidthOffset;
 
@@ -45,6 +49,8 @@ namespace WordSearch
             _resRatio.y = _mainCanvas.sizeDelta.y / Screen.height;
 
             _gameStatus |= (int)GameStatus.PLAYING;
+
+            Initialize();
 
             // _resRatio.x = Screen.width / _mainCanvas.sizeDelta.x ;
             // _resRatio.y = Screen.height /_mainCanvas.sizeDelta.y ;
@@ -68,6 +74,11 @@ namespace WordSearch
 #endif
         }
 
+        private void Initialize()
+        {
+            int coinCount = PlayerPrefs.GetInt(PLAYER_COIN_COUNT_LABEL, 0);
+            _gameData.PlayerCoinCount = coinCount;
+        }
 
         void LateUpdate()
         {

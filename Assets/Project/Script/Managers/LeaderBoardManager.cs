@@ -39,7 +39,7 @@ namespace WordSearch
         {
             PlayGamesPlatform.Activate();
 #if !TEST_LEADERBOARD
-            // PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
+            PlayGamesPlatform.Instance.Authenticate(ProcessAuthentication);
 #endif
             _lbEntries = new List<LeaderBoardEntry>();
 

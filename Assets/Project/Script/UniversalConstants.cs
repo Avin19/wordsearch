@@ -36,5 +36,9 @@ namespace WordSearch
         public const string SPREADSHEET_ID = "1VqmBuvmj9kNdr1fucZuWyxM-cU3nov0T8TgEefUk808";
         public const string SHEET_NAME = "Sheet1";
         public const string WORD_LIST_RANGE = "B1:B100";
+
+        //                  REWARDS
+        public const string DAILY_LOGIN_COUNT_LABEL = "DailyLoginCount";
+        public const string PLAYER_COIN_COUNT_LABEL = "PlayerCoinCount";
     }
 }

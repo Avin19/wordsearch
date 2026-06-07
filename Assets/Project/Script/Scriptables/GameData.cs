@@ -8,4 +8,6 @@ public class GameData : ScriptableObject
 	public bool MuteEnabled = false;
 	public SceneIndex PrevSceneIndex;
 	public bool LoadingPanelAvailable;
+	public int PlayerCoinCount = 0, DailyLoginCount = 0;
+	public bool RewardCollected = false;
 }
