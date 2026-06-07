@@ -25,6 +25,8 @@ namespace WordSearch
         private void OnDestroy()
         {
             _gameData.LoadingPanelAvailable = false;
+            
+            GameEvents.OnLoadingUpdate -= UpdateLoadingBarUI;
         }
 
         void Start()

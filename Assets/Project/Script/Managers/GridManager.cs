@@ -67,6 +67,11 @@ namespace WordSearch
         };
         // private readonly string INDENT_TAG = $"<{INDENT_LABEL}={INDENT_VAL_INCREMENT}>";
 
+        private void OnDestroy()
+        {
+            GameEvents.OnDragEnded -= CheckForSelectedWord;
+        }
+
         private void Start()
         {
             _gridBuilder = new StringBuilder();
@@ -170,7 +175,7 @@ namespace WordSearch
             long selectedSol = 0;
             int selectedLength = 0;
             // DIAGONAL SELECTION
-            if ((endIndex.x - startIndex.x) == (startIndex.y - endIndex.y))
+            if (Mathf.Abs(endIndex.x - startIndex.x) ==Mathf.Abs(startIndex.y - endIndex.y))
             {
                 selectedSol |= (1 << WORD_DIAG_FLAG);
                 selectedLength = endIndex.y - startIndex.y;

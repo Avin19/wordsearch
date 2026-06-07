@@ -34,6 +34,11 @@ namespace WordSearch
 
         private List<LeaderBoardEntry> _lbEntries;
         private LeaderboardScoreData _testData;
+        private void OnDestroy()
+        {
+            GameEvents.OnSubmitScore -= SubmitScore;
+            GameEvents.OnFetchScore -= FetchScores;
+        }
 
         void Start()
         {

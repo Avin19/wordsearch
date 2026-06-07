@@ -43,6 +43,11 @@ namespace WordSearch
 
         // TOP_LEFT_INDEX: [-7, 5], BOTTOM_RIGHT_INDEX: [2, -4];
 
+        private void OnDestroy()
+        {
+            GameEvents.OnGameStatusUpdate -= HandleStatusUpdate;
+        }
+
         void Start()
         {
             _resRatio.x = _mainCanvas.sizeDelta.x / Screen.width;

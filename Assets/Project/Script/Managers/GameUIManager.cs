@@ -67,6 +67,10 @@ namespace WordSearch
             _gameData.DailyLoginCount = 0;
             _gameData.RewardCollected = false;
 #endif
+
+            GameEvents.OnLevelGenerated -= UpdateWordList;
+            GameEvents.OnCorrectSelection -= SpawnHighlightBar;
+            GameEvents.OnGameStatusUpdate -= HandleStatusUpdate;
         }
 
         void Start()

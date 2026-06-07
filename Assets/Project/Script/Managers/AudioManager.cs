@@ -18,6 +18,14 @@ namespace WordSearch
 
         private const string MASTER_VOLUME = "MasterVolume";
 
+        public void OnDestroy()
+        {
+            GameEvents.OnButtonClick -= PlayButtonClick;
+            GameEvents.OnGPOneShotSFXReqAsync -= PlayOneShotSFX;
+            GameEvents.OnGPSFXChangeReq -= PlayGameplaySFX;
+            GameEvents.OnToggleMute -= ToggleMute;
+        }
+
         public void Initialize()
         {
             MuteEnabled = false;
