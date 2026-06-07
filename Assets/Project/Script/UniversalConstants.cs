@@ -40,6 +40,7 @@ namespace WordSearch
         //                  REWARDS
         public const string DAILY_LOGIN_COUNT_LABEL = "DailyLoginCount";
         public const string PLAYER_COIN_COUNT_LABEL = "PlayerCoinCount";
+        public const string LAST_CLAIM_LABEL = "LastRewardClaim";
         public const int LEVEL_WON_COINS_AMT = 50;
     }
 }

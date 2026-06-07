@@ -9,5 +9,4 @@ public class GameData : ScriptableObject
 	public SceneIndex PrevSceneIndex;
 	public bool LoadingPanelAvailable;
 	public int PlayerCoinCount = 0, DailyLoginCount = 0;
-	public bool RewardCollected = false;
 }

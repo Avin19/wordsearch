@@ -65,7 +65,6 @@ namespace WordSearch
 #if UNITY_EDITOR && RESET_GAME_DATA
             _gameData.PlayerCoinCount = 0;
             _gameData.DailyLoginCount = 0;
-            _gameData.RewardCollected = false;
 #endif
 
             GameEvents.OnLevelGenerated -= UpdateWordList;
@@ -96,12 +95,10 @@ namespace WordSearch
         private void InitializeRewardsUI()
         {
             int loginCount = PlayerPrefs.GetInt(DAILY_LOGIN_COUNT_LABEL, 0);
+            int lastClaimDate = PlayerPrefs.GetInt(LAST_CLAIM_LABEL, -1);
 
-            if (_gameData.RewardCollected)
-            {
-                _claimRewardBt.interactable = false;
-                return;     // Already taken the reward
-            }
+            int currDate = DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day;
+
 
             _gameData.DailyLoginCount = loginCount;
 
@@ -110,6 +107,12 @@ namespace WordSearch
             for (int i = 0; i < loginCount; i++)
                 _dailyCoinBtCheckmarkImgs[i].gameObject.SetActive(true);
 
+            // Same Session
+            if (lastClaimDate == currDate)
+            {
+                _claimRewardBt.interactable = false;
+                return;     // Already taken the reward
+            }
             _claimRewardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.CLAIM_DAILY_REWARD_REQ));
         }
 
@@ -143,8 +146,11 @@ namespace WordSearch
 
                 case GameUIInteraction.CLAIM_DAILY_REWARD_REQ:
                     // int loginCount = PlayerPrefs.GetInt(DAILY_LOGIN_COUNT_LABEL, -1);
+
+                    int lastClaimDate = DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day;
+                    PlayerPrefs.SetInt(LAST_CLAIM_LABEL, lastClaimDate);
+
                     _claimRewardBt.interactable = false;
-                    _gameData.RewardCollected = true;
 
                     _dailyCoinBtCheckmarkImgs[_gameData.DailyLoginCount].gameObject.SetActive(true);
                     _gameData.DailyLoginCount++;
