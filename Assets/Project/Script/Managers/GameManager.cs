@@ -24,11 +24,11 @@ namespace WordSearch
 
         // private const float CANVAS_HEIGHT = 1544;
 
-		[Header("Game Data")]
-		[SerializeField] private GameData _gameData;
+        [Header("Game Data")]
+        [SerializeField] private GameData _gameData;
 
         //              TEST
-		[Header("Canvas")]        
+        [Header("Canvas")]
         [SerializeField] private RectTransform _mainCanvas;
         private float _canvasWidthOffset;
 
@@ -90,6 +90,8 @@ namespace WordSearch
             switch ((GameStatus)status)
             {
                 case GameStatus.WON:
+                    _gameData.PlayerCoinCount += LEVEL_WON_COINS_AMT;
+                    PlayerPrefs.SetInt(PLAYER_COIN_COUNT_LABEL, _gameData.PlayerCoinCount);
 
                     break;
             }

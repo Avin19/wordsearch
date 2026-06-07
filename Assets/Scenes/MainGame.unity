@@ -9935,9 +9935,9 @@ MonoBehaviour:
   - {fileID: 1774541870}
   _gameData: {fileID: 11400000, guid: 222d36caf5dbd1248951f1198e24bf1c, type: 2}
   _gameOverPanel: {fileID: 896646159}
-  _nextLevelBt: {fileID: 77042518}
-  _mainMenuBt: {fileID: 1627252772}
-  _leaderBoardBt: {fileID: 517281482}
+  _nextLevelGOBt: {fileID: 77042518}
+  _mainMenuGOBt: {fileID: 1627252772}
+  _leaderBoardGOBt: {fileID: 517281482}
   _claimRewardBt: {fileID: 1546189877}
   _dailyCoinBtCheckmarkImgs:
   - {fileID: 6163541073495844781}

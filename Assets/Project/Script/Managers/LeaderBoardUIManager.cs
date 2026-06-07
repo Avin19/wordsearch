@@ -22,7 +22,7 @@ namespace WordSearch
             NONE = 0, ACTIVE = 1
         }
 
-        // [SerializeField] private RectTransform _leaderboardPanel;
+        [SerializeField] private RectTransform _leaderboardPanel;
 
         [Header("Buttons")]
         [SerializeField] private Button _weeklyLBBt;
@@ -126,8 +126,9 @@ namespace WordSearch
 
                 case UIInteraction.CLOSE_LB_REQ:
 					SceneManager.UnloadSceneAsync((int)SceneIndex.LEADERBOARD);
-					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)_gameData.PrevSceneIndex);
-					_gameData.PrevSceneIndex = SceneIndex.LEADERBOARD;
+                    _leaderboardPanel.gameObject.SetActive(false);
+					// GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)_gameData.PrevSceneIndex);
+					// _gameData.PrevSceneIndex = SceneIndex.LEADERBOARD;
 
                     break;
 

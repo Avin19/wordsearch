@@ -26,7 +26,7 @@ namespace WordSearch
         }
 
         //                  LOADING
-        public enum LoadingPanelStatus { DISABLE, ENABLE, UPDATE }
+        public enum LoadingPanelStatus { DISABLE, ENABLE, ENABLE_WITHOUT_LOAD, UPDATE }
 
         //                  LEADERBOARD
         public const int PLAYER_LIMIT = 10;
@@ -40,5 +40,6 @@ namespace WordSearch
         //                  REWARDS
         public const string DAILY_LOGIN_COUNT_LABEL = "DailyLoginCount";
         public const string PLAYER_COIN_COUNT_LABEL = "PlayerCoinCount";
+        public const int LEVEL_WON_COINS_AMT = 50;
     }
 }

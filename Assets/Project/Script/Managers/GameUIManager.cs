@@ -33,7 +33,7 @@ namespace WordSearch
 
         [Header("Game Over")]
         [SerializeField] private RectTransform _gameOverPanel;
-        [SerializeField] private Button _nextLevelBt, _mainMenuBt, _leaderBoardBt;
+        [SerializeField] private Button _nextLevelGOBt, _mainMenuGOBt, _leaderBoardGOBt;
 
         [Header("Rewards")]
         [SerializeField] private Button _claimRewardBt;
@@ -71,16 +71,16 @@ namespace WordSearch
 
         void Start()
         {
-            PlayerPrefs.DeleteAll();            //TEST
+            // PlayerPrefs.DeleteAll();            //TEST
 
             // Debug.Log($"Month: {DateTime.Today.Month} | Date: {DateTime.Today.Day}");
             _currMonthTxt.text = DateTime.Now.ToString("MMM").ToUpper();
             _currDateTxt.text = DateTime.Now.Day.ToString();
 
             //              BUTTONS
-            _mainMenuBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.MAIN_MENU_REQ));
-            _nextLevelBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.NEXT_LEVEL_REQ));
-            _leaderBoardBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
+            _mainMenuGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.MAIN_MENU_REQ));
+            _nextLevelGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.NEXT_LEVEL_REQ));
+            _leaderBoardGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
             InitializeRewardsUI();
 
             //              ACTIONS

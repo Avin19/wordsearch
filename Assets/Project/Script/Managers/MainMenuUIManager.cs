@@ -125,8 +125,8 @@ namespace WordSearch
 
 				case UIInteraction.LEADERBOARD_REQ:
 					// _leaderBoardPanel.gameObject.SetActive(status);
-					_mainMenuPanel.gameObject.SetActive(false);
-					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
+					// _mainMenuPanel.gameObject.SetActive(false);
+					// SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_MENU);
 					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.LEADERBOARD);
 					_gameData.PrevSceneIndex = SceneIndex.MAIN_MENU;
 
