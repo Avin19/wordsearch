@@ -15,12 +15,16 @@ namespace WordSearch
         enum GameUIInteraction
         {
             MAIN_MENU_REQ, NEXT_LEVEL_REQ, LEADERBOARD_REQ,
-            CLAIM_DAILY_REWARD_REQ
+            CLAIM_DAILY_REWARD_REQ, BACK_REQ
         }
 
-        [SerializeField] private TMPro.TMP_Text _currMonthTxt, _currDateTxt;
+        [Header("Gameplay")]
+        [SerializeField] private TMPro.TMP_Text _currMonthTxt;
+        [SerializeField] private TMPro.TMP_Text _currDateTxt;
+        [SerializeField] private Button _backGMBt;
 
         //              GRID
+        [Header("GRID")]
         [SerializeField] private Image _highlightImg;
         [SerializeField] private RectTransform _highlightContainer;
 
@@ -84,6 +88,8 @@ namespace WordSearch
             _mainMenuGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.MAIN_MENU_REQ));
             _nextLevelGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.NEXT_LEVEL_REQ));
             _leaderBoardGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
+            _backGMBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.BACK_REQ));
+
             InitializeRewardsUI();
 
             //              ACTIONS
@@ -124,6 +130,10 @@ namespace WordSearch
                     _gameOverPanel.gameObject.SetActive(true);
 
                     break;
+
+                case GameStatus.WORD_LIST_GEN_ERROR:
+
+                    break;
             }
         }
 
@@ -131,8 +141,12 @@ namespace WordSearch
         {
             switch (interaction)
             {
+                case GameUIInteraction.BACK_REQ:
                 case GameUIInteraction.MAIN_MENU_REQ:
-                    SceneManager.LoadScene((int)SceneIndex.MAIN_MENU);
+                    // SceneManager.LoadScene((int)SceneIndex.MAIN_MENU);
+					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_GAMEPLAY);
+					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_MENU);
+					_gameData.PrevSceneIndex = SceneIndex.MAIN_GAMEPLAY;
 
                     break;
 

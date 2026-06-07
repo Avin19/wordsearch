@@ -1,5 +1,5 @@
 // #define TEST_GRID
-// #define USE_API
+#define USE_API
 
 using System.Text;
 using System.Threading.Tasks;
@@ -89,6 +89,13 @@ namespace WordSearch
 
         private void GetAndParseWordList(string result, HttpStatusCode status)
         {
+            if(status != HttpStatusCode.OK)
+            {
+                Debug.LogError($"An error Occured | Unable to fetch word list");
+                GameEvents.OnGameStatusUpdate?.Invoke((int)GameStatus.WORD_LIST_GEN_ERROR);
+                return;
+            }
+
             sheetResponse = JsonConvert.DeserializeObject<GoogleSheetResponse>(result);
             // Debug.Log($"Word List | Status: {status} | result: \n {result}");
 

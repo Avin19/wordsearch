@@ -22,7 +22,8 @@ namespace WordSearch
             PAUSED = (1 << 1),
             WON = (1 << 2),
             LOST = (1 << 3),
-            LEADERBOARD = (1 << 4)
+            LEADERBOARD = (1 << 4),
+            WORD_LIST_GEN_ERROR = (1 << 5),
         }
 
         //                  LOADING

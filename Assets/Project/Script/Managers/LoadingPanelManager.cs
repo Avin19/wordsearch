@@ -25,7 +25,7 @@ namespace WordSearch
         private void OnDestroy()
         {
             _gameData.LoadingPanelAvailable = false;
-            
+
             GameEvents.OnLoadingUpdate -= UpdateLoadingBarUI;
         }
 
@@ -44,7 +44,7 @@ namespace WordSearch
 
         private void UpdateLoadingBarUI(LoadingPanelStatus status, float value)
         {
-            Debug.Log($"UpdateLoadingBarUI called | status: {status}");
+            // Debug.Log($"UpdateLoadingBarUI called | status: {status}");
             switch (status)
             {
                 case LoadingPanelStatus.DISABLE:
