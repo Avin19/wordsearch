@@ -15,13 +15,18 @@ namespace WordSearch
         enum GameUIInteraction
         {
             MAIN_MENU_REQ, NEXT_LEVEL_REQ, LEADERBOARD_REQ,
-            CLAIM_DAILY_REWARD_REQ, BACK_REQ
+            CLAIM_DAILY_REWARD_REQ, BACK_REQ, TUTORIAL_OPEN_REQ, TUTORIAL_CLOSE_REQ
         }
 
         [Header("Gameplay")]
         [SerializeField] private TMPro.TMP_Text _currMonthTxt;
         [SerializeField] private TMPro.TMP_Text _currDateTxt;
-        [SerializeField] private Button _backGMBt;
+        [SerializeField] private Button _backGMBt, _infoGMBt;
+
+        [Header("Tutorial")]
+        [SerializeField] private RectTransform _tutorialPanel;
+        [SerializeField] private Button _backTutBt;
+        [SerializeField] private UnityEngine.Video.VideoPlayer _tutorialPlayer;
 
         //              GRID
         [Header("GRID")]
@@ -94,6 +99,10 @@ namespace WordSearch
             _leaderBoardGOBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.LEADERBOARD_REQ));
             _backGMBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.BACK_REQ));
 
+            _infoGMBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.TUTORIAL_OPEN_REQ));
+            _backTutBt.onClick.AddListener(() => HandleUIInteraction(GameUIInteraction.TUTORIAL_OPEN_REQ));
+
+            _tutorialPlayer.Prepare();
             InitializeRewardsUI();
 
             //              ACTIONS
@@ -156,9 +165,9 @@ namespace WordSearch
                 case GameUIInteraction.BACK_REQ:
                 case GameUIInteraction.MAIN_MENU_REQ:
                     // SceneManager.LoadScene((int)SceneIndex.MAIN_MENU);
-					SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_GAMEPLAY);
-					GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_MENU);
-					_gameData.PrevSceneIndex = SceneIndex.MAIN_GAMEPLAY;
+                    SceneManager.UnloadSceneAsync((int)SceneIndex.MAIN_GAMEPLAY);
+                    GameEvents.OnLoadingUpdate?.Invoke(LoadingPanelStatus.ENABLE, (int)SceneIndex.MAIN_MENU);
+                    _gameData.PrevSceneIndex = SceneIndex.MAIN_GAMEPLAY;
 
                     break;
 
@@ -193,6 +202,18 @@ namespace WordSearch
 
                     PlayerPrefs.SetInt(DAILY_LOGIN_COUNT_LABEL, _gameData.DailyLoginCount);
                     PlayerPrefs.SetInt(PLAYER_COIN_COUNT_LABEL, _gameData.PlayerCoinCount);
+
+                    break;
+
+                case GameUIInteraction.TUTORIAL_OPEN_REQ:
+                    _tutorialPanel.gameObject.SetActive(true);
+                    _tutorialPlayer.Play();
+
+                    break;
+
+                case GameUIInteraction.TUTORIAL_CLOSE_REQ:
+                    _tutorialPanel.gameObject.SetActive(false);
+                    _tutorialPlayer.Stop();
 
                     break;
             }
